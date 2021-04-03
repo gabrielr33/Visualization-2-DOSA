@@ -1,0 +1,12 @@
+{
+  "name": "dosa",
+  "version": "1.0.0",
+  "description": "Vis2 project 2021",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
