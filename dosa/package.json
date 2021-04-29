@@ -8,5 +8,9 @@
   },
   "keywords": [],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "d3": "^6.7.0",
+    "d3-queue": "^3.0.7"
+  }
 }
