@@ -2,44 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5a116a5f-f470-4c92-a5f7-5832793da432" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/style/style.css" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/dataset/europe_map.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/LICENSE.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190101_20190131.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190201_20190228.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190301_20190331.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190401_20190430.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190501_20190531.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190601_20190630.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190701_20190731.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190801_20190831.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20190901_20190930.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20191001_20191031.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20191101_20191130.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20191201_20191231.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200101_20200131.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200201_20200229.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200301_20200331.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200401_20200430.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200501_20200531.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200601_20200630.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200701_20200731.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200801_20200831.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20200901_20200930.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20201001_20201031.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20201101_20201130.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20201201_20201231.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20210101_20210131.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20210201_20210228.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/flightlist_20210301_20210331.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/dataset_flights_europe/readme.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/flights_data/airports.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/flights_data/flights.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/dataset/flights_data/index.html" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/style/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/style/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -67,7 +36,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="14.15.1" />
     <property name="javascript.nodejs.core.library.typings.version" value="14.14.37" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../../../../Bachelor/5._Semester_W2019-20/Visualisierung_1/Assignment_2/vis1Lab2_2019" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Sample_Project_Vis2/Vis" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -89,6 +58,9 @@
       <workItem from="1617443919220" duration="695000" />
       <workItem from="1619532680045" duration="2541000" />
       <workItem from="1619678693175" duration="6756000" />
+      <workItem from="1619767198950" duration="8488000" />
+      <workItem from="1619779889861" duration="384000" />
+      <workItem from="1619862026760" duration="3455000" />
     </task>
     <servers />
   </component>
@@ -100,10 +72,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="734" y="357" key="#com.intellij.execution.impl.EditConfigurationsDialog/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619681018747" />
-    <state x="1060" y="457" key="FileChooserDialogImpl" timestamp="1619683523159">
+    <state x="1060" y="457" key="FileChooserDialogImpl" timestamp="1619862039462">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1060" y="457" key="FileChooserDialogImpl/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619683523159" />
+    <state x="1060" y="457" key="FileChooserDialogImpl/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619862039462" />
     <state width="2539" height="492" key="GridCell.Tab.0.bottom" timestamp="1619685515979">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
@@ -168,5 +140,9 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state width="2539" height="492" key="GridCell.Tab.3.right/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619685515979" />
+    <state x="1101" y="616" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1619864324574">
+      <screen x="0" y="0" width="2560" height="1400" />
+    </state>
+    <state x="1101" y="616" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619864324574" />
   </component>
 </project>
