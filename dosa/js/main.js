@@ -54,12 +54,30 @@ function loadWorldMap() {
         svgMap.append('g').selectAll('path')
             .data(countries)
             .join('path')
+            .attr("name", function(d) {
+                return d.properties.NAME;
+            })
             .attr('d', geoPath)
-            .attr('fill', '#000')
-            .attr('stroke', '#FFF');
+            .attr('fill', '#000000')
+            .attr('stroke', '#FFFFFF')
+            .on("mouseover", function(){
+                d3.select(this).attr("fill", "#C4EBF1")
+                d3.select(this).attr("stroke", "#C4EBF1")
+                d3.select("#countryname")
+                    .text(d3.select(this).attr("name"));
+            })
+            .on("mouseout", function(){
+                d3.select(this).attr("fill", "#000000")
+                d3.select(this).attr("stroke", "#FFFFFF")
+            })
+            //.on("mousedown", mousedownSelection)
+            //.on("mouseup", mouseupSelection)
     });
 }
 
+/**
+ * Sets the map pan and zoom
+ */
 function initMapZoom() {
     const zoom = d3.zoom()
         .scaleExtent([1, 7]);
@@ -95,3 +113,25 @@ function loadData(month) {
         }).bind(this));*/
 }
 
+function mousedownSelection() {
+    var m = d3.pointer(this);
+
+    rect = svgMap.append("rect")
+        .attr("x", m[0])
+        .attr("y", m[1])
+        .attr("height", 0)
+        .attr("width", 0);
+
+    svgMap.on("mousemove", mousemove);
+}
+
+function mousemove(d) {
+    var m = d3.pointer(this);
+
+    rect.attr("width", Math.max(0, m[0] - rect.attr("x")))
+        .attr("height", Math.max(0, m[1] - rect.attr("y")));
+}
+
+function mouseupSelection() {
+    svgMap.on("mousemove", null);
+}

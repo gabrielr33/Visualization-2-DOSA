@@ -5,5 +5,9 @@ html, body {
 }
 
 svg {
-    background: #000;
+    background: #000000;
+}
+
+rect {
+    opacity: 0.2;
 }
