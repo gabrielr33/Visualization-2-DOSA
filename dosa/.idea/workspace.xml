@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5a116a5f-f470-4c92-a5f7-5832793da432" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/dataset/europe_map.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/js/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/js/main.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
@@ -61,6 +59,8 @@
       <workItem from="1619767198950" duration="8488000" />
       <workItem from="1619779889861" duration="384000" />
       <workItem from="1619862026760" duration="3455000" />
+      <workItem from="1619876082281" duration="873000" />
+      <workItem from="1620021608070" duration="4891000" />
     </task>
     <servers />
   </component>
@@ -72,10 +72,10 @@
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
     <state x="734" y="357" key="#com.intellij.execution.impl.EditConfigurationsDialog/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619681018747" />
-    <state x="1060" y="457" key="FileChooserDialogImpl" timestamp="1619862039462">
+    <state x="1060" y="457" key="FileChooserDialogImpl" timestamp="1620023472725">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>
-    <state x="1060" y="457" key="FileChooserDialogImpl/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1619862039462" />
+    <state x="1060" y="457" key="FileChooserDialogImpl/2560.0.2048.1120/0.0.2560.1400@0.0.2560.1400" timestamp="1620023472725" />
     <state width="2539" height="492" key="GridCell.Tab.0.bottom" timestamp="1619685515979">
       <screen x="0" y="0" width="2560" height="1400" />
     </state>

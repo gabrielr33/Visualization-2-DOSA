@@ -10,8 +10,11 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
+    "@angular/cli": "^11.2.11",
+    "angular": "^1.8.2",
     "d3": "^6.7.0",
     "d3-queue": "^3.0.7",
+    "d3-selection": "^2.0.0",
     "topojson": "^3.0.2"
   }
 }

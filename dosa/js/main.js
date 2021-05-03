@@ -10,12 +10,18 @@ var selectedMonth;
 
 var flightListMonth = [];
 
+var svgMap;
+
 // Functions
 function init() {
-    loadData(1901);
     loadWorldMap();
+    initMapZoom();
+    loadData(1901);
 }
 
+/**
+ * Loads the european map from the topojson file
+ */
 function loadWorldMap() {
 
     var countries;
@@ -29,29 +35,42 @@ function loadWorldMap() {
 
         var margin = {top: 50, left: 50, right:50, bottom:50},
             height = 600 - margin.top - margin.bottom,
-            width = 1200 - margin.left - margin.right;
+            width = 900 - margin.left - margin.right;
+
+        svgMap = d3.select("#map")
+            .append('svg')
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("width", width + margin.left + margin.right)
+            .append("g")
+            .attr("transform", "translate(" + (2 * margin.left) + "," + margin.top + ")");
 
         var projection = d3.geoMercator()
-            .translate([width/3, height*1.7])
+            .translate([width/3,height*1.7])
             .scale(500)
 
         var geoPath = d3.geoPath()
             .projection(projection)
 
-        let svg = d3.select("#map")
-            .append('svg')
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
-            .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-        svg.append('g').selectAll('path')
+        svgMap.append('g').selectAll('path')
             .data(countries)
             .join('path')
             .attr('d', geoPath)
-            .attr('fill', '#FFF')
-            .attr('stroke', '#000');
+            .attr('fill', '#000')
+            .attr('stroke', '#FFF');
     });
+}
+
+function initMapZoom() {
+    const zoom = d3.zoom()
+        .scaleExtent([1, 7]);
+
+    zoom.on('zoom', function (event) {
+        const {transform} = event;
+        svgMap.attr("transform", transform);
+        svgMap.attr("stroke-width", 1 / transform.k);
+    });
+
+    d3.select("#map").call(zoom);
 }
 
 /**
@@ -75,3 +94,4 @@ function loadData(month) {
             if (loadedRow) this.flightListMonth.push(loadedRow);
         }).bind(this));*/
 }
+
