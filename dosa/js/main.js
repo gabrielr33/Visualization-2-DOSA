@@ -16,9 +16,9 @@ var projection;
 
 // Functions
 function init() {
+    loadData(1901);
     loadWorldMap();
     initMapZoom();
-    loadData(1901);
 }
 
 /**
@@ -115,7 +115,7 @@ function loadData(month) {
         /*svgMap.append('g').selectAll('circles')
             .data(flightListMonth)
             .enter().append("circle")
-            .attr("r", 0.5)
+            .attr("r", 0.2)
             .attr("cx", function (d) {
                 var coords = projection([d.longitude_1, d.latitude_1])
                 return coords[0];
@@ -146,8 +146,8 @@ function loadData(month) {
                 return coordsEnd[1];
             })
             .attr('stroke', "#ffe900")
-            .attr("stroke-width", 0.02);
-
+            .attr("stroke-width", 0.02)
+            .attr("pointer-events", "none");
     });
 
     /*d3.queue()
