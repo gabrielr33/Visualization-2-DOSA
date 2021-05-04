@@ -9,10 +9,12 @@ var monthMax = 2103;    // = 2021/03
 var selectedMonth;
 
 var flightListMonth = [];
-var selectedCountries = [];
+var selectedCountries = {};
 
 var svgMap;
 var projection;
+
+var amountLines;
 
 // Functions
 function init() {
@@ -25,11 +27,10 @@ function init() {
  * Loads the european map from the topojson file
  */
 function loadWorldMap() {
-
     var countries;
 
     //Load the world map from topojson
-    d3.json('./dataset/europe_map.json').then(function(worldData) {
+    d3.json('./dataset/europe_map_ICAO.json').then(function(worldData) {
         if (worldData) {
             countries = topojson.feature(worldData, worldData.objects.europe).features;
             //console.log(countries);
@@ -59,27 +60,42 @@ function loadWorldMap() {
             .attr("name", function(d) {
                 return d.properties.NAME;
             })
+            .attr("ICAO", function(d) {
+                selectedCountries[d.properties.ICAO] = false;
+                return d.properties.ICAO;
+            })
             .attr('d', geoPath)
             .attr('fill', '#000000')
             .attr('stroke', '#FFFFFF')
             .on("mouseover", function(){
-                d3.select(this).attr("fill", "#20ff00")
-                d3.select(this).attr("stroke", "#20ff00")
+                if (d3.select(this).attr("fill") !== "#ff7028") {
+                    d3.select(this).attr("fill", "#20ff00")
+                    d3.select(this).attr("stroke", "#20ff00")
+                }
                 d3.select("#countryname")
                     .text(d3.select(this).attr("name"));
+
             })
             .on("mouseout", function(){
-                d3.select(this).attr("fill", "#000000")
-                d3.select(this).attr("stroke", "#FFFFFF")
+                if (d3.select(this).attr("fill") !== "#ff7028") {
+                    d3.select(this).attr("fill", "#000000")
+                    d3.select(this).attr("stroke", "#FFFFFF")
+                }
             })
-            .on("click", function() {
-                d3.select(this).attr("fill", "#e50a0a")
-                selectedCountries.push(d3.select(this).attr("name"));
-                console.log(selectedCountries);
-            });
-            //.on("mousedown", mousedownSelection)
-            //.on("mouseup", mouseupSelection)
+            .on("click", selectedCountry);
     });
+}
+
+function selectedCountry() {
+    if (d3.select(this).attr("fill") === "#ff7028") {
+        d3.select(this).attr("fill", "#20ff00")
+        selectedCountries[d3.select(this).attr("ICAO")] = false;
+    } else {
+        d3.select(this).attr("fill", "#ff7028")
+        d3.select(this).attr("stroke", "#FFFFFF")
+        selectedCountries[d3.select(this).attr("ICAO")] = true;
+    }
+    displayData();
 }
 
 /**
@@ -111,43 +127,7 @@ function loadData(month) {
     }).then(function () {
         console.log(this.flightListMonth);
 
-
-        /*svgMap.append('g').selectAll('circles')
-            .data(flightListMonth)
-            .enter().append("circle")
-            .attr("r", 0.2)
-            .attr("cx", function (d) {
-                var coords = projection([d.longitude_1, d.latitude_1])
-                return coords[0];
-            })
-            .attr("cy", function (d) {
-                var coords = projection([d.longitude_1, d.latitude_1])
-                return coords[1];
-            })
-            .attr('fill', '#ff0000')*/
-
-        svgMap.append('g').selectAll('lines')
-            .data(flightListMonth)
-            .enter().append("line")
-            .attr("x1", function (d) {
-                var coordsStart = projection([d.longitude_1, d.latitude_1])
-                return coordsStart[0];
-            })
-            .attr("y1", function (d) {
-                var coordsStart = projection([d.longitude_1, d.latitude_1])
-                return coordsStart[1];
-            })
-            .attr("x2", function (d) {
-                var coordsEnd = projection([d.longitude_2, d.latitude_2])
-                return coordsEnd[0];
-            })
-            .attr("y2", function (d) {
-                var coordsEnd = projection([d.longitude_2, d.latitude_2])
-                return coordsEnd[1];
-            })
-            .attr('stroke', "#ffe900")
-            .attr("stroke-width", 0.02)
-            .attr("pointer-events", "none");
+        displayData();
     });
 
     /*d3.queue()
@@ -158,25 +138,51 @@ function loadData(month) {
         }).bind(this));*/
 }
 
-function mousedownSelection() {
-    var m = d3.pointer(this);
+function displayData() {
+    d3.selectAll("line").remove();
+    amountLines = 0;
 
-    rect = svgMap.append("rect")
-        .attr("x", m[0])
-        .attr("y", m[1])
-        .attr("height", 0)
-        .attr("width", 0);
+    svgMap.append('g').selectAll('lines')
+        .data(flightListMonth.filter(function (d) {
+            if (selectedCountries[d.origin.substring(0, 2)] === true) {
+                amountLines++;
+                return true;
+            } else {
+                return false;
+            }
+        }))
+        .enter().append("line")
+        .attr("x1", function (d) {
+            var coordsStart = projection([d.longitude_1, d.latitude_1])
+            return coordsStart[0];
+        })
+        .attr("y1", function (d) {
+            var coordsStart = projection([d.longitude_1, d.latitude_1])
+            return coordsStart[1];
+        })
+        .attr("x2", function (d) {
+            var coordsEnd = projection([d.longitude_2, d.latitude_2])
+            return coordsEnd[0];
+        })
+        .attr("y2", function (d) {
+            var coordsEnd = projection([d.longitude_2, d.latitude_2])
+            return coordsEnd[1];
+        })
+        .attr('stroke', "#ffe900")
+        .attr("stroke-width", Math.min(0.02 + (100 / amountLines), 0.5))
+        .attr("pointer-events", "none");
 
-    svgMap.on("mousemove", mousemove);
-}
-
-function mousemove(d) {
-    var m = d3.pointer(this);
-
-    rect.attr("width", Math.max(0, m[0] - rect.attr("x")))
-        .attr("height", Math.max(0, m[1] - rect.attr("y")));
-}
-
-function mouseupSelection() {
-    svgMap.on("mousemove", null);
+    /*svgMap.append('g').selectAll('circles')
+        .data(flightListMonth)
+        .enter().append("circle")
+        .attr("r", 0.2)
+        .attr("cx", function (d) {
+            var coords = projection([d.longitude_1, d.latitude_1])
+            return coords[0];
+        })
+        .attr("cy", function (d) {
+            var coords = projection([d.longitude_1, d.latitude_1])
+            return coords[1];
+        })
+        .attr('fill', '#ff0000')*/
 }
