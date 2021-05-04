@@ -9,8 +9,10 @@ var monthMax = 2103;    // = 2021/03
 var selectedMonth;
 
 var flightListMonth = [];
+var selectedCountries = [];
 
 var svgMap;
+var projection;
 
 // Functions
 function init() {
@@ -44,7 +46,7 @@ function loadWorldMap() {
             .append("g")
             .attr("transform", "translate(" + (2 * margin.left) + "," + margin.top + ")");
 
-        var projection = d3.geoMercator()
+        projection = d3.geoMercator()
             .translate([width/3,height*1.7])
             .scale(500)
 
@@ -61,8 +63,8 @@ function loadWorldMap() {
             .attr('fill', '#000000')
             .attr('stroke', '#FFFFFF')
             .on("mouseover", function(){
-                d3.select(this).attr("fill", "#C4EBF1")
-                d3.select(this).attr("stroke", "#C4EBF1")
+                d3.select(this).attr("fill", "#20ff00")
+                d3.select(this).attr("stroke", "#20ff00")
                 d3.select("#countryname")
                     .text(d3.select(this).attr("name"));
             })
@@ -70,6 +72,11 @@ function loadWorldMap() {
                 d3.select(this).attr("fill", "#000000")
                 d3.select(this).attr("stroke", "#FFFFFF")
             })
+            .on("click", function() {
+                d3.select(this).attr("fill", "#e50a0a")
+                selectedCountries.push(d3.select(this).attr("name"));
+                console.log(selectedCountries);
+            });
             //.on("mousedown", mousedownSelection)
             //.on("mouseup", mouseupSelection)
     });
@@ -80,7 +87,7 @@ function loadWorldMap() {
  */
 function initMapZoom() {
     const zoom = d3.zoom()
-        .scaleExtent([1, 7]);
+        .scaleExtent([1, 10]);
 
     zoom.on('zoom', function (event) {
         const {transform} = event;
@@ -98,11 +105,49 @@ function initMapZoom() {
 function loadData(month) {
 
     //Load the specified monthly data
-    d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function(loadedRow) {
+    d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function (loadedRow) {
         if (loadedRow)
             this.flightListMonth.push(loadedRow);
-    }).then(function() {
+    }).then(function () {
         console.log(this.flightListMonth);
+
+
+        /*svgMap.append('g').selectAll('circles')
+            .data(flightListMonth)
+            .enter().append("circle")
+            .attr("r", 0.5)
+            .attr("cx", function (d) {
+                var coords = projection([d.longitude_1, d.latitude_1])
+                return coords[0];
+            })
+            .attr("cy", function (d) {
+                var coords = projection([d.longitude_1, d.latitude_1])
+                return coords[1];
+            })
+            .attr('fill', '#ff0000')*/
+
+        svgMap.append('g').selectAll('lines')
+            .data(flightListMonth)
+            .enter().append("line")
+            .attr("x1", function (d) {
+                var coordsStart = projection([d.longitude_1, d.latitude_1])
+                return coordsStart[0];
+            })
+            .attr("y1", function (d) {
+                var coordsStart = projection([d.longitude_1, d.latitude_1])
+                return coordsStart[1];
+            })
+            .attr("x2", function (d) {
+                var coordsEnd = projection([d.longitude_2, d.latitude_2])
+                return coordsEnd[0];
+            })
+            .attr("y2", function (d) {
+                var coordsEnd = projection([d.longitude_2, d.latitude_2])
+                return coordsEnd[1];
+            })
+            .attr('stroke', "#ffe900")
+            .attr("stroke-width", 0.02);
+
     });
 
     /*d3.queue()
