@@ -36,7 +36,7 @@ function init() {
 }
 
 /**
- * Initializes the filter checkboxes
+ * Initializes the filter checkboxes and inputs
  */
 function initFilters(){
     d3.select("#withinEdges").on("change",updatedFilters);
@@ -52,6 +52,11 @@ function updatedFilters(){
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
     displayData(true);
+}
+
+function loadDataForMonth(month) {
+    // TODO check for correct month input
+    loadData(month);
 }
 
 /**
@@ -131,7 +136,7 @@ function loadAirports(){
         if (airportData)
             this.airportList.push(airportData);
     }).then(function () {
-        console.log(this.airportList);
+        //console.log(this.airportList);
 
         svgMap.append('g').selectAll('circles')
             .data(airportList)
@@ -188,13 +193,15 @@ function initMapZoom() {
  * @param month
  */
 function loadData(month) {
+    this.flightListMonth = [];
 
     //Load the specified monthly data
     d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function (loadedRow) {
         if (loadedRow)
-            this.flightListMonth.push(loadedRow);
+            flightListMonth.push(loadedRow);
     }).then(function () {
-        console.log(this.flightListMonth);
+        //console.log(flightListMonth);
+        console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
         displayData();
     });
 

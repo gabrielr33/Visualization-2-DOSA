@@ -2,6 +2,7 @@ html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    background: lightgrey;
 }
 
 svg {
@@ -10,4 +11,25 @@ svg {
 
 rect {
     opacity: 0.2;
+}
+
+.view-container {
+    display: flex;
+}
+
+.view-detail, .view-high-level {
+    flex: 1;
+    border: 2px solid black;
+    margin: 10px;
+    padding: 10px;
+    background: black;
+    color: white;
+}
+
+.view-filter {
+    margin: 10px;
+    padding: 10px;
+    border: 2px solid black;
+    background: black;
+    color: white;
 }

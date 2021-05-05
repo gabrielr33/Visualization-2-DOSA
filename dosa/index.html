@@ -21,29 +21,44 @@
             Created by Martin Crepaz and Gabriel Ratschiller
         </p>
 
-        <div>
-            <p>
-                <input type="checkbox" id="withinEdges">
-                <label for="withinEdges">Within edges</label>
-                <input type="checkbox" id="betweenEdges">
-                <label for="betweenEdges">Between edges</label>
-                <input type="checkbox" id="backgroundEdges">
-                <label for="backgroundEdges">Background edges</label>
-            </p>
+        <hr>
+
+        <div class="view-filter">
+            <label>
+                <input type="text" id="monthInput" value="1901">
+            </label>
+            <button type="button" id="loadMonthButton" onclick="loadDataForMonth(document.getElementById('monthInput').value)" >Select month</button>
+
+            <div>
+                <p>
+                    <input type="checkbox" id="withinEdges">
+                    <label for="withinEdges">Within edges</label>
+                    <input type="checkbox" id="betweenEdges">
+                    <label for="betweenEdges">Between edges</label>
+                    <input type="checkbox" id="backgroundEdges">
+                    <label for="backgroundEdges">Background edges</label>
+                </p>
+            </div>
         </div>
 
-        <h1>Detail View</h1>
-        <div id="map"></div>
+        <div class="view-container">
+            <div class="view-detail">
+                <h2>Detail View</h2>
+                <div id="map"></div>
 
-        <div id="countryname">
-            <text>null</text>
+                <div id="countryname">
+                    <text>null</text>
+                </div>
+
+                <div id="countedges">
+                    <text>null</text>
+                </div>
+            </div>
+
+            <div class="view-high-level">
+                <h2>High-Level View</h2>
+                <div id="highlevelview"></div>
+            </div>
         </div>
-
-        <div id="countedges">
-            <text>null</text>
-        </div>
-
-        <h1>High-Level View</h1>
-        <div id="highlevelview"></div>
     </body>
 </html>
