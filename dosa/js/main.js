@@ -9,6 +9,8 @@ var monthMax = 2103;    // = 2021/03
 var selectedMonth;
 
 var flightListMonth = [];
+var airportList = [];
+
 var selectedCountries = {};
 var selectedCountriesWithinEdges = {};
 var selectedCountriesOutgoingEdges = {};
@@ -101,21 +103,49 @@ function loadWorldMap() {
             .attr('fill', '#000000')
             .attr('stroke', '#FFFFFF')
             .on("mouseover", function(){
-                if (d3.select(this).attr("fill") !== "#ff7028") {
-                    d3.select(this).attr("fill", "#20ff00")
-                    d3.select(this).attr("stroke", "#20ff00")
+                if (d3.select(this).attr("fill") !== "#83d0c9") {
+                    d3.select(this).attr("fill", "#35a79c")
+                    d3.select(this).attr("stroke", "#35a79c")
                 }
                 d3.select("#countryname")
                     .text(d3.select(this).attr("name"));
 
             })
             .on("mouseout", function(){
-                if (d3.select(this).attr("fill") !== "#ff7028") {
+                if (d3.select(this).attr("fill") !== "#83d0c9") {
                     d3.select(this).attr("fill", "#000000")
                     d3.select(this).attr("stroke", "#FFFFFF")
                 }
             })
             .on("click", selectedCountry);
+
+        loadAirports();
+    });
+}
+
+/**
+ * Loads the european airports and draws them as circles
+ */
+function loadAirports(){
+    d3.csv('./dataset/airports.csv', function (airportData) {
+        if (airportData)
+            this.airportList.push(airportData);
+    }).then(function () {
+        console.log(this.airportList);
+
+        svgMap.append('g').selectAll('circles')
+            .data(airportList)
+            .enter().append("circle")
+            .attr("r", 0.3)
+            .attr("cx", function (d) {
+                var coords = projection([d.longitude, d.latitude])
+                return coords[0];
+            })
+            .attr("cy", function (d) {
+                var coords = projection([d.longitude, d.latitude])
+                return coords[1];
+            })
+            .attr('fill', '#ff5703');
     });
 }
 
@@ -123,13 +153,13 @@ function loadWorldMap() {
  * Sets the color of a country if it has been clicked and adds or removes the corresponding high level information
  */
 function selectedCountry() {
-    if (d3.select(this).attr("fill") === "#ff7028") {
+    if (d3.select(this).attr("fill") === "#83d0c9") {
         d3.select(this).attr("fill", "#20ff00")
         selectedCountries[d3.select(this).attr("ICAO")] = false;
 
         displayData(false, d3.select(this));
     } else {
-        d3.select(this).attr("fill", "#ff7028")
+        d3.select(this).attr("fill", "#83d0c9")
         d3.select(this).attr("stroke", "#FFFFFF")
         selectedCountries[d3.select(this).attr("ICAO")] = true;
 
@@ -268,20 +298,6 @@ function displayData(highLevelInfo, country) {
                         "; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
             })
     }
-
-    /*svgMap.append('g').selectAll('circles')
-        .data(flightListMonth)
-        .enter().append("circle")
-        .attr("r", 0.2)
-        .attr("cx", function (d) {
-            var coords = projection([d.longitude_1, d.latitude_1])
-            return coords[0];
-        })
-        .attr("cy", function (d) {
-            var coords = projection([d.longitude_1, d.latitude_1])
-            return coords[1];
-        })
-        .attr('fill', '#ff0000')*/
 }
 
 /**
