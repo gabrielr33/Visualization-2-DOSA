@@ -159,7 +159,7 @@ function loadAirports(){
  */
 function selectedCountry() {
     if (d3.select(this).attr("fill") === "#83d0c9") {
-        d3.select(this).attr("fill", "#20ff00")
+        d3.select(this).attr("fill", "#35a79c")
         selectedCountries[d3.select(this).attr("ICAO")] = false;
 
         displayData(false, d3.select(this));
