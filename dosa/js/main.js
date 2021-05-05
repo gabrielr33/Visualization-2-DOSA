@@ -10,11 +10,14 @@ var selectedMonth;
 
 var flightListMonth = [];
 var selectedCountries = {};
+var selectedCountriesWithinEdges = {};
+var selectedCountriesOutgoingEdges = {};
+var selectedCountriesIncomingEdges = {};
 
 var svgMap;
 var projection;
 
-var amountLines;
+var amountEdges;
 
 // Functions
 function init() {
@@ -60,8 +63,14 @@ function loadWorldMap() {
             .attr("name", function(d) {
                 return d.properties.NAME;
             })
+            .attr("namesum", function(d) {
+                return d.properties.NAMESUM;
+            })
             .attr("ICAO", function(d) {
                 selectedCountries[d.properties.ICAO] = false;
+                selectedCountriesWithinEdges[d.properties.ICAO] = 0;
+                selectedCountriesOutgoingEdges[d.properties.ICAO] = 0;
+                selectedCountriesIncomingEdges[d.properties.ICAO] = 0;
                 return d.properties.ICAO;
             })
             .attr('d', geoPath)
@@ -86,16 +95,22 @@ function loadWorldMap() {
     });
 }
 
+/**
+ * Sets the color of a country if it has been clicked and adds or removes the corresponding high level information
+ */
 function selectedCountry() {
     if (d3.select(this).attr("fill") === "#ff7028") {
         d3.select(this).attr("fill", "#20ff00")
         selectedCountries[d3.select(this).attr("ICAO")] = false;
+
+        displayData(false, d3.select(this));
     } else {
         d3.select(this).attr("fill", "#ff7028")
         d3.select(this).attr("stroke", "#FFFFFF")
         selectedCountries[d3.select(this).attr("ICAO")] = true;
+
+        displayData(true, d3.select(this));
     }
-    displayData();
 }
 
 /**
@@ -138,14 +153,40 @@ function loadData(month) {
         }).bind(this));*/
 }
 
-function displayData() {
+/**
+ * Draws the edges on the map according to the selected countries
+ * @param highLevelInfo specifies if the high level info has to be created or removed
+ * @param country
+ */
+function displayData(highLevelInfo, country) {
     d3.selectAll("line").remove();
-    amountLines = 0;
+    amountEdges = 0;
+    resetEdgeCounters();
 
     svgMap.append('g').selectAll('lines')
         .data(flightListMonth.filter(function (d) {
-            if (selectedCountries[d.origin.substring(0, 2)] === true) {
-                amountLines++;
+            const orig = d.origin.substring(0, 2);
+            const dest = d.destination.substring(0, 2);
+
+            if (selectedCountries[orig] === true) {
+                if (d.origin === d.destination) {
+                    selectedCountriesWithinEdges[orig]++;
+                }
+                else {
+                    selectedCountriesOutgoingEdges[orig]++;
+                    selectedCountriesIncomingEdges[dest]++;
+                }
+                amountEdges++;
+                return true;
+            } else if (selectedCountries[dest] === true) {
+                if (d.origin === d.destination) {
+                    selectedCountriesWithinEdges[dest]++;
+                }
+                else {
+                    selectedCountriesOutgoingEdges[orig]++;
+                    selectedCountriesIncomingEdges[dest]++;
+                }
+                amountEdges++;
                 return true;
             } else {
                 return false;
@@ -169,8 +210,16 @@ function displayData() {
             return coordsEnd[1];
         })
         .attr('stroke', "#ffe900")
-        .attr("stroke-width", Math.min(0.02 + (100 / amountLines), 0.5))
+        //.attr("stroke-width", Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
+        .attr("stroke-width", 0.1)
         .attr("pointer-events", "none");
+
+    d3.select("#countedges")
+        .text("Total of " + amountEdges + " edges");
+
+    if (country != null) {
+        highLevelInfo ? createHighLevelInfo(country) : removeHighLevelInfo(country);
+    }
 
     /*svgMap.append('g').selectAll('circles')
         .data(flightListMonth)
@@ -185,4 +234,35 @@ function displayData() {
             return coords[1];
         })
         .attr('fill', '#ff0000')*/
+}
+
+/**
+ * Resets all the edge counter objects
+ */
+function resetEdgeCounters(){
+    Object.keys(selectedCountriesWithinEdges).forEach(function(key) { selectedCountriesWithinEdges[key] = 0; });
+    Object.keys(selectedCountriesOutgoingEdges).forEach(function(key) { selectedCountriesOutgoingEdges[key] = 0; });
+    Object.keys(selectedCountriesIncomingEdges).forEach(function(key) { selectedCountriesIncomingEdges[key] = 0; });
+}
+
+/**
+ * Creates a high level entry in the high level view
+ * @param countryToCreate
+ */
+function createHighLevelInfo(countryToCreate) {
+    d3.select("#highlevelview")
+        .append("p")
+        .attr("id", "highlevel" + countryToCreate.attr("namesum"))
+        .text(countryToCreate.attr("name") +
+            "; Within: " + selectedCountriesWithinEdges[countryToCreate.attr("ICAO")] +
+            "; Outgoing: " + selectedCountriesOutgoingEdges[countryToCreate.attr("ICAO")] +
+            "; Incoming: " + selectedCountriesIncomingEdges[countryToCreate.attr("ICAO")])
+}
+
+/**
+ * Removes the specified high level entry
+ * @param countryToDelete
+ */
+function removeHighLevelInfo(countryToDelete) {
+    d3.select("#highlevel" + countryToDelete.attr("namesum")).remove()
 }

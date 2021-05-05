@@ -7,6 +7,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Albania",
+            "NAMESUM": "Albania",
             "ICAO": "LA"
           },
           "id": "AL",
@@ -26,6 +27,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Bosnia and Herzegovina",
+            "NAMESUM": "BosniaAndHerzegovina",
             "ICAO": "LQ"
           },
           "id": "BA",
@@ -48,6 +50,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Bulgaria",
+            "NAMESUM": "Bulgaria",
             "ICAO": "LB"
           },
           "id": "BG",
@@ -66,6 +69,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Cyprus",
+            "NAMESUM": "Cyprus",
             "ICAO": "LC"
           },
           "id": "CY",
@@ -79,6 +83,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Denmark",
+            "NAMESUM": "Denmark",
             "ICAO": "EK"
           },
           "id": "DK",
@@ -180,6 +185,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Ireland",
+            "NAMESUM": "Ireland",
             "ICAO": "EI"
           },
           "id": "IE",
@@ -211,6 +217,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Estonia",
+            "NAMESUM": "Estonia",
             "ICAO": "EE"
           },
           "id": "EE",
@@ -257,6 +264,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Austria",
+            "NAMESUM": "Austria",
             "ICAO": "LO"
           },
           "id": "AT",
@@ -292,6 +300,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Czech Republic",
+            "NAMESUM": "CzechRepublic",
             "ICAO": "LK"
           },
           "id": "CZ",
@@ -314,6 +323,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Finland",
+            "NAMESUM": "Finland",
             "ICAO": "EF"
           },
           "id": "FI",
@@ -457,6 +467,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "France",
+            "NAMESUM": "France",
             "ICAO": "LF"
           },
           "id": "FR",
@@ -531,6 +542,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Germany",
+            "NAMESUM": "Germany",
             "ICAO": "ED"
           },
           "id": "DE",
@@ -688,6 +700,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Greece",
+            "NAMESUM": "Greece",
             "ICAO": "LG"
           },
           "id": "GR",
@@ -1044,6 +1057,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Croatia",
+            "NAMESUM": "Croatia",
             "ICAO": "LD"
           },
           "id": "HR",
@@ -1176,6 +1190,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Hungary",
+            "NAMESUM": "Hungary",
             "ICAO": "LH"
           },
           "id": "HU",
@@ -1201,6 +1216,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Iceland",
+            "NAMESUM": "Iceland",
             "ICAO": "BI"
           },
           "id": "IS",
@@ -1214,6 +1230,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Italy",
+            "NAMESUM": "Italy",
             "ICAO": "LI"
           },
           "id": "IT",
@@ -1354,6 +1371,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Latvia",
+            "NAMESUM": "Latvia",
             "ICAO": "EV"
           },
           "id": "LV",
@@ -1377,6 +1395,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Belarus",
+            "NAMESUM": "Belarus",
             "ICAO": "UM"
           },
           "id": "BY",
@@ -1420,6 +1439,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Lithuania",
+            "NAMESUM": "Lithuania",
             "ICAO": "EY"
           },
           "id": "LT",
@@ -1453,6 +1473,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Slovakia",
+            "NAMESUM": "Slovakia",
             "ICAO": "LZ"
           },
           "id": "SK",
@@ -1470,6 +1491,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Liechtenstein",
+            "NAMESUM": "Liechtenstein",
             "ICAO": ""
           },
           "id": "LI",
@@ -1484,6 +1506,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "The former Yugoslav Republic of Macedonia",
+            "NAMESUM": "TheFormerYugoslavRepublicOfMacedonia",
             "ICAO": "LW"
           },
           "id": "MK",
@@ -1500,6 +1523,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Malta",
+            "NAMESUM": "Malta",
             "ICAO": "LM"
           },
           "id": "MT",
@@ -1520,6 +1544,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Belgium",
+            "NAMESUM": "Belgium",
             "ICAO": "EB"
           },
           "id": "BE",
@@ -1543,6 +1568,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Andorra",
+            "NAMESUM": "Andorra",
             "ICAO": ""
           },
           "id": "AD",
@@ -1557,6 +1583,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Luxembourg",
+            "NAMESUM": "Luxembourg",
             "ICAO": "EL"
           },
           "id": "LU",
@@ -1576,6 +1603,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Monaco",
+            "NAMESUM": "Monaco",
             "ICAO": "LN"
           },
           "id": "MC",
@@ -1591,6 +1619,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Montenegro",
+            "NAMESUM": "Montenegro",
             "ICAO": "LY"
           },
           "id": "ME",
@@ -1609,6 +1638,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Netherlands",
+            "NAMESUM": "Netherlands",
             "ICAO": "EH"
           },
           "id": "NL",
@@ -1671,6 +1701,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Norway",
+            "NAMESUM": "Norway",
             "ICAO": "EN"
           },
           "id": "NO",
@@ -2149,6 +2180,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Poland",
+            "NAMESUM": "Poland",
             "ICAO": "EP"
           },
           "id": "PL",
@@ -2181,6 +2213,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Portugal",
+            "NAMESUM": "Portugal",
             "ICAO": "LP"
           },
           "id": "PT",
@@ -2195,6 +2228,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Romania",
+            "NAMESUM": "Romania",
             "ICAO": "LR"
           },
           "id": "RO",
@@ -2214,6 +2248,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Republic of Moldova",
+            "NAMESUM": "RepublicOfMoldova",
             "ICAO": "LU"
           },
           "id": "MD",
@@ -2236,6 +2271,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Slovenia",
+            "NAMESUM": "Slovenia",
             "ICAO": "LJ"
           },
           "id": "SI",
@@ -2261,6 +2297,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Spain",
+            "NAMESUM": "Spain",
             "ICAO": "LE"
           },
           "id": "ES",
@@ -2321,6 +2358,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Sweden",
+            "NAMESUM": "Sweden",
             "ICAO": "ES"
           },
           "id": "SE",
@@ -2428,6 +2466,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Switzerland",
+            "NAMESUM": "Switzerland",
             "ICAO": "LS"
           },
           "id": "CH",
@@ -2460,6 +2499,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Turkey",
+            "NAMESUM": "Turkey",
             "ICAO": "LT"
           },
           "id": "TR",
@@ -2500,6 +2540,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "United Kingdom",
+            "NAMESUM": "UnitedKingdom",
             "ICAO": "EG"
           },
           "id": "GB",
@@ -2751,6 +2792,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Ukraine",
+            "NAMESUM": "Ukraine",
             "ICAO": "UK"
           },
           "id": "UA",
@@ -2807,6 +2849,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "San Marino",
+            "NAMESUM": "SanMarino",
             "ICAO": ""
           },
           "id": "SM",
@@ -2821,6 +2864,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Serbia",
+            "NAMESUM": "Serbia",
             "ICAO": "LY"
           },
           "id": "RS",
@@ -2845,6 +2889,7 @@
           "type": "Polygon",
           "properties": {
             "NAME": "Holy See (Vatican City)",
+            "NAMESUM": "HolySeeVaticanCity",
             "ICAO": ""
           },
           "id": "VA",
@@ -2858,6 +2903,7 @@
           "type": "MultiPolygon",
           "properties": {
             "NAME": "Russia",
+            "NAMESUM": "Russia",
             "ICAO": "UU"
           },
           "id": "RU",
