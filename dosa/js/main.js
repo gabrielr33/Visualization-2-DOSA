@@ -19,11 +19,37 @@ var projection;
 
 var amountEdges;
 
-// Functions
+var withinEdges = false;
+var betweenEdges = false;
+var backgroundEdges = false;
+
+/**
+ * At startup of the program, initializes the map, views and data
+ */
 function init() {
+    initFilters();
     loadData(1901);
     loadWorldMap();
     initMapZoom();
+}
+
+/**
+ * Initializes the filter checkboxes
+ */
+function initFilters(){
+    d3.select("#withinEdges").on("change",updatedFilters);
+    d3.select("#betweenEdges").on("change",updatedFilters);
+    d3.select("#backgroundEdges").on("change",updatedFilters);
+}
+
+/**
+ * If a filter has been changed the map has to bee updated
+ */
+function updatedFilters(){
+    withinEdges = d3.select("#withinEdges").property("checked");
+    betweenEdges = d3.select("#betweenEdges").property("checked");
+    backgroundEdges = d3.select("#backgroundEdges").property("checked");
+    displayData();
 }
 
 /**
@@ -34,10 +60,8 @@ function loadWorldMap() {
 
     //Load the world map from topojson
     d3.json('./dataset/europe_map_ICAO.json').then(function(worldData) {
-        if (worldData) {
+        if (worldData)
             countries = topojson.feature(worldData, worldData.objects.europe).features;
-            //console.log(countries);
-        }
 
         var margin = {top: 50, left: 50, right:50, bottom:50},
             height = 600 - margin.top - margin.bottom,
@@ -141,16 +165,50 @@ function loadData(month) {
             this.flightListMonth.push(loadedRow);
     }).then(function () {
         console.log(this.flightListMonth);
-
         displayData();
     });
 
     /*d3.queue()
         .defer(d3.csv, "./dataset/dataset_flights_europe/flightlist_20" + month + ".csv")
         .await((function (loadedRow) {
-            console.log("es");
-            if (loadedRow) this.flightListMonth.push(loadedRow);
+            if (loadedRow)
+                this.flightListMonth.push(loadedRow);
         }).bind(this));*/
+}
+
+/**
+ * Filters the data based on the selected filters
+ * @param withinEdges if true, then show the within edges of the selected country
+ * @param betweenEdges if true, then show the between edges between two selected countries
+ * @param backgroundEdges if true, then show the background edges of the selected country
+ * @returns {*[]} the filtered data
+ */
+function filterData(withinEdges, betweenEdges, backgroundEdges) {
+    return flightListMonth.filter(function (d) {
+        const orig = d.origin.substring(0, 2);
+        const dest = d.destination.substring(0, 2);
+
+        if (orig === dest && selectedCountries[orig] === true) {
+            if (withinEdges)
+                selectedCountriesWithinEdges[orig]++;
+            return withinEdges;
+        } else if (selectedCountries[orig] === true && selectedCountries[dest] === true) {
+            if (betweenEdges) {
+                selectedCountriesOutgoingEdges[orig]++;
+                selectedCountriesIncomingEdges[dest]++;
+            }
+            return betweenEdges;
+        } else if (selectedCountries[orig] === true) {
+            if (backgroundEdges)
+                selectedCountriesOutgoingEdges[orig]++;
+            return backgroundEdges;
+        } else if (selectedCountries[dest] === true) {
+            if (backgroundEdges)
+                selectedCountriesIncomingEdges[dest]++;
+            return backgroundEdges;
+        } else
+            return false;
+    });
 }
 
 /**
@@ -163,35 +221,10 @@ function displayData(highLevelInfo, country) {
     amountEdges = 0;
     resetEdgeCounters();
 
-    svgMap.append('g').selectAll('lines')
-        .data(flightListMonth.filter(function (d) {
-            const orig = d.origin.substring(0, 2);
-            const dest = d.destination.substring(0, 2);
+    var filteredData = filterData(withinEdges, betweenEdges, backgroundEdges);
 
-            if (selectedCountries[orig] === true) {
-                if (d.origin === d.destination) {
-                    selectedCountriesWithinEdges[orig]++;
-                }
-                else {
-                    selectedCountriesOutgoingEdges[orig]++;
-                    selectedCountriesIncomingEdges[dest]++;
-                }
-                amountEdges++;
-                return true;
-            } else if (selectedCountries[dest] === true) {
-                if (d.origin === d.destination) {
-                    selectedCountriesWithinEdges[dest]++;
-                }
-                else {
-                    selectedCountriesOutgoingEdges[orig]++;
-                    selectedCountriesIncomingEdges[dest]++;
-                }
-                amountEdges++;
-                return true;
-            } else {
-                return false;
-            }
-        }))
+    svgMap.append('g').selectAll('lines')
+        .data(filteredData)
         .enter().append("line")
         .attr("x1", function (d) {
             var coordsStart = projection([d.longitude_1, d.latitude_1])
@@ -211,7 +244,10 @@ function displayData(highLevelInfo, country) {
         })
         .attr('stroke', "#ffe900")
         //.attr("stroke-width", Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
-        .attr("stroke-width", 0.1)
+        .attr("stroke-width", function(){
+            amountEdges++;
+            return 0.1;
+        })
         .attr("pointer-events", "none");
 
     d3.select("#countedges")
