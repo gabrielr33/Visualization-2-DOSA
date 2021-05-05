@@ -49,7 +49,7 @@ function updatedFilters(){
     withinEdges = d3.select("#withinEdges").property("checked");
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
-    displayData();
+    displayData(true);
 }
 
 /**
@@ -244,7 +244,7 @@ function displayData(highLevelInfo, country) {
         })
         .attr('stroke', "#ffe900")
         //.attr("stroke-width", Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
-        .attr("stroke-width", function(){
+        .attr("stroke-width", function () {
             amountEdges++;
             return 0.1;
         })
@@ -255,6 +255,18 @@ function displayData(highLevelInfo, country) {
 
     if (country != null) {
         highLevelInfo ? createHighLevelInfo(country) : removeHighLevelInfo(country);
+    }
+
+    if (highLevelInfo && country == null) {
+        d3.select("#highlevelview")
+            .selectAll("p")
+            .each(function () {
+                d3.select(this)
+                    .text(d3.select(this).attr("name") +
+                        "; Within: " + selectedCountriesWithinEdges[d3.select(this).attr("ICAO")] +
+                        "; Outgoing: " + selectedCountriesOutgoingEdges[d3.select(this).attr("ICAO")] +
+                        "; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
+            })
     }
 
     /*svgMap.append('g').selectAll('circles')
@@ -289,6 +301,8 @@ function createHighLevelInfo(countryToCreate) {
     d3.select("#highlevelview")
         .append("p")
         .attr("id", "highlevel" + countryToCreate.attr("namesum"))
+        .attr("name", countryToCreate.attr("name"))
+        .attr("ICAO", countryToCreate.attr("ICAO"))
         .text(countryToCreate.attr("name") +
             "; Within: " + selectedCountriesWithinEdges[countryToCreate.attr("ICAO")] +
             "; Outgoing: " + selectedCountriesOutgoingEdges[countryToCreate.attr("ICAO")] +

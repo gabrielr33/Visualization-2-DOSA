@@ -32,7 +32,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="javascript.nodejs.core.library.configured.version" value="14.15.1" />
     <property name="javascript.nodejs.core.library.typings.version" value="14.14.37" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../Sample_Project_Vis2/Vis" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="list.type.of.created.stylesheet" value="CSS" />
     <property name="nodejs_interpreter_path" value="node" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -62,7 +62,9 @@
       <workItem from="1620021608070" duration="10971000" />
       <workItem from="1620127453457" duration="3595000" />
       <workItem from="1620142329517" duration="14732000" />
-      <workItem from="1620195460246" duration="15315000" />
+      <workItem from="1620195460246" duration="15406000" />
+      <workItem from="1620212268321" duration="3000" />
+      <workItem from="1620213005410" duration="1292000" />
     </task>
     <servers />
   </component>
