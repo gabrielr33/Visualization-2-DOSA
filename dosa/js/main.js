@@ -17,6 +17,7 @@ var selectedCountriesOutgoingEdges = {};
 var selectedCountriesIncomingEdges = {};
 
 var svgMap;
+var svgRect;
 var projection;
 
 var amountEdges;
@@ -24,6 +25,9 @@ var amountEdges;
 var withinEdges = false;
 var betweenEdges = false;
 var backgroundEdges = false;
+
+var drawSelectionsMode = false;
+var selectionRect;
 
 /**
  * At startup of the program, initializes the map, views and data
@@ -39,9 +43,10 @@ function init() {
  * Initializes the filter checkboxes and inputs
  */
 function initFilters(){
-    d3.select("#withinEdges").on("change",updatedFilters);
-    d3.select("#betweenEdges").on("change",updatedFilters);
-    d3.select("#backgroundEdges").on("change",updatedFilters);
+    d3.select("#withinEdges").on("change", updatedFilters);
+    d3.select("#betweenEdges").on("change", updatedFilters);
+    d3.select("#backgroundEdges").on("change", updatedFilters);
+    d3.select("#drawselections").on("change", updatedFilters);
 }
 
 /**
@@ -51,8 +56,8 @@ function updatedFilters(){
     withinEdges = d3.select("#withinEdges").property("checked");
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
+    drawSelectionsMode = d3.select("#drawselections").property("checked");
     redrawEdgesAndUpdateInfo();
-    //displayData(true);
 }
 
 function loadDataForMonth(month) {
@@ -108,8 +113,8 @@ function loadWorldMap() {
             .attr('d', geoPath)
             .attr('fill', '#000000')
             .attr('stroke', '#FFFFFF')
-            .on("mouseover", function(){
-                if (d3.select(this).attr("fill") !== "#83d0c9") {
+            .on("mouseover", function(event){
+                if (d3.select(this).attr("fill") !== "#83d0c9" && !drawSelectionsMode) {
                     d3.select(this).attr("fill", "#35a79c")
                     d3.select(this).attr("stroke", "#35a79c")
                 }
@@ -117,13 +122,15 @@ function loadWorldMap() {
                     .text(d3.select(this).attr("name"));
 
             })
-            .on("mouseout", function(){
-                if (d3.select(this).attr("fill") !== "#83d0c9") {
+            .on("mouseout", function(event){
+                if (d3.select(this).attr("fill") !== "#83d0c9" && !drawSelectionsMode) {
                     d3.select(this).attr("fill", "#000000")
                     d3.select(this).attr("stroke", "#FFFFFF")
                 }
             })
-            .on("click", selectedCountry);
+            .on("click", selectedCountry)
+            .on("mousedown", mousedown)
+            .on("mouseup", mouseup);
 
         loadAirports();
     });
@@ -158,7 +165,10 @@ function loadAirports(){
 /**
  * Sets the color of a country if it has been clicked and adds or removes the corresponding high level information
  */
-function selectedCountry() {
+function selectedCountry(event) {
+    if (drawSelectionsMode)
+        return;
+
     if (d3.select(this).attr("fill") === "#83d0c9") {
         d3.select(this).attr("fill", "#35a79c")
         selectedCountries[d3.select(this).attr("ICAO")] = false;
@@ -181,6 +191,9 @@ function initMapZoom() {
         .scaleExtent([1, 10]);
 
     zoom.on('zoom', function (event) {
+        if (drawSelectionsMode)
+            return;
+
         const {transform} = event;
         svgMap.attr("transform", transform);
         svgMap.attr("stroke-width", 1 / transform.k);
@@ -295,10 +308,6 @@ function displayData(highLevelInfo, country) {
     if (country != null) {
         highLevelInfo ? createHighLevelInfo(country) : removeHighLevelInfo(country);
     }
-
-    //if (highLevelInfo && country == null) {
-    //    updateHighLevelInfo();
-    //}
 }
 
 function redrawEdgesAndUpdateInfo(){
@@ -349,4 +358,34 @@ function createHighLevelInfo(countryToCreate) {
  */
 function removeHighLevelInfo(countryToDelete) {
     d3.select("#highlevel" + countryToDelete.attr("namesum")).remove()
+}
+
+// For Selection //
+function mousedown(event) {
+    if (!drawSelectionsMode)
+        return;
+
+    const mouseCoords = d3.pointer(event);
+    selectionRect = svgMap.append("rect")
+        .attr("x", mouseCoords[0])
+        .attr("y", mouseCoords[1])
+        .attr("height", 0)
+        .attr("width", 0);
+
+    svgMap.on("mousemove", mousemove);
+}
+
+function mousemove(event) {
+    if (!drawSelectionsMode)
+        return;
+
+    const mouseCoords = d3.pointer(event);
+    selectionRect.attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
+                .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
+}
+
+function mouseup() {
+    if (!drawSelectionsMode)
+        return;
+    svgMap.on("mousemove", null);
 }

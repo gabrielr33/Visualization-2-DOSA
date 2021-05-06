@@ -10,7 +10,8 @@ svg {
 }
 
 rect {
-    opacity: 0.2;
+    background-color: yellow;
+    opacity: 0.6;
 }
 
 .view-container {
