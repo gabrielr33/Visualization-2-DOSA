@@ -51,7 +51,8 @@ function updatedFilters(){
     withinEdges = d3.select("#withinEdges").property("checked");
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
-    displayData(true);
+    redrawEdgesAndUpdateInfo();
+    //displayData(true);
 }
 
 function loadDataForMonth(month) {
@@ -203,6 +204,7 @@ function loadData(month) {
         //console.log(flightListMonth);
         console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
         displayData();
+        updateHighLevelInfo();
     });
 
     /*d3.queue()
@@ -294,17 +296,26 @@ function displayData(highLevelInfo, country) {
         highLevelInfo ? createHighLevelInfo(country) : removeHighLevelInfo(country);
     }
 
-    if (highLevelInfo && country == null) {
-        d3.select("#highlevelview")
-            .selectAll("p")
-            .each(function () {
-                d3.select(this)
-                    .text(d3.select(this).attr("name") +
-                        "; Within: " + selectedCountriesWithinEdges[d3.select(this).attr("ICAO")] +
-                        "; Outgoing: " + selectedCountriesOutgoingEdges[d3.select(this).attr("ICAO")] +
-                        "; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
-            })
-    }
+    //if (highLevelInfo && country == null) {
+    //    updateHighLevelInfo();
+    //}
+}
+
+function redrawEdgesAndUpdateInfo(){
+    displayData();
+    updateHighLevelInfo();
+}
+
+function updateHighLevelInfo(){
+    d3.select("#highlevelview")
+        .selectAll("p")
+        .each(function () {
+            d3.select(this)
+                .text(d3.select(this).attr("name") +
+                    "; Within: " + selectedCountriesWithinEdges[d3.select(this).attr("ICAO")] +
+                    "; Outgoing: " + selectedCountriesOutgoingEdges[d3.select(this).attr("ICAO")] +
+                    "; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
+        })
 }
 
 /**
