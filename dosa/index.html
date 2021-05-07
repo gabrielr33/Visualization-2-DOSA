@@ -1,49 +1,53 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Vis2 DOSA</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vis2 DOSA</title>
 
-        <link rel="stylesheet" type="text/css" href="style/style.css">
+    <link rel="stylesheet" type="text/css" href="style/style.css">
 
-        <script src="lib/d3/d3.js"></script>
-        <script src="lib/d3-queue/d3-queue.js"></script>
-        <script src="lib/topojson/topojson.js"></script>
-        <script src="js/main.js"></script>
-    </head>
+    <script src="lib/d3/d3.js"></script>
+    <script src="lib/d3-queue/d3-queue.js"></script>
+    <script src="lib/topojson/topojson.js"></script>
+    <script src="js/main.js"></script>
+</head>
 
-    <body onload="init()">
+<body onload="init()">
 
-        <h1>Vis2 DOSA</h1>
+<h1>Vis2 DOSA</h1>
 
-        <p id="credits">
-            Created by Martin Crepaz and Gabriel Ratschiller
+<p id="credits">
+    Created by Martin Crepaz and Gabriel Ratschiller
+</p>
+
+<hr>
+
+<div class="view-filter">
+    <h2>Filter View</h2>
+    <label>
+        <input type="text" id="monthInput" value="1901">
+    </label>
+    <button type="button" id="loadMonthButton" onclick="loadDataForMonth(document.getElementById('monthInput').value)">
+        Select month
+    </button>
+
+    <div>
+        <p>
+            <input type="checkbox" id="withinEdges">
+            <label for="withinEdges">Within edges</label>
+            <input type="checkbox" id="betweenEdges">
+            <label for="betweenEdges">Between edges</label>
+            <input type="checkbox" id="backgroundEdges">
+            <label for="backgroundEdges">Background edges</label>
         </p>
+    </div>
+</div>
 
-        <hr>
-
-        <div class="view-filter">
-            <h2>Filter View</h2>
-            <label>
-                <input type="text" id="monthInput" value="1901">
-            </label>
-            <button type="button" id="loadMonthButton" onclick="loadDataForMonth(document.getElementById('monthInput').value)" >Select month</button>
-
-            <div>
-                <p>
-                    <input type="checkbox" id="withinEdges">
-                    <label for="withinEdges">Within edges</label>
-                    <input type="checkbox" id="betweenEdges">
-                    <label for="betweenEdges">Between edges</label>
-                    <input type="checkbox" id="backgroundEdges">
-                    <label for="backgroundEdges">Background edges</label>
-                </p>
-            </div>
-        </div>
-
+<div class="view-container">
+    <div class="view-detail">
         <div class="view-container">
-            <div class="view-detail">
+            <div class="view-map">
                 <h2>Detail View</h2>
 
                 <input type="checkbox" id="drawselections">
@@ -59,11 +63,17 @@
                     <text>null</text>
                 </div>
             </div>
-
-            <div class="view-high-level">
-                <h2>High-Level View</h2>
-                <div id="highlevelview"></div>
+            <div class="view-selections">
+                <br><br><br><br>
+                <div id="selections"></div>
             </div>
         </div>
-    </body>
+    </div>
+
+    <div class="view-high-level">
+        <h2>High-Level View</h2>
+        <div id="highlevelview"></div>
+    </div>
+</div>
+</body>
 </html>

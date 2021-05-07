@@ -128,9 +128,15 @@ function loadWorldMap() {
                     d3.select(this).attr("stroke", "#FFFFFF")
                 }
             })
-            .on("click", selectedCountry)
-            .on("mousedown", mousedown)
-            .on("mouseup", mouseup);
+            //.on("mouseup", mouseup)
+            //.on("mousedown", mousedown)
+
+            .call(d3.drag()
+                .on("start", mousedown)
+                .on("drag", mousemove)
+                .on("end", mouseup)
+            );
+            //.on("click", selectedCountry);
 
         loadAirports();
     });
@@ -360,11 +366,12 @@ function removeHighLevelInfo(countryToDelete) {
     d3.select("#highlevel" + countryToDelete.attr("namesum")).remove()
 }
 
-// For Selection //
+// For the drawing of selections //
 function mousedown(event) {
     if (!drawSelectionsMode)
         return;
 
+    console.log("mouse down")
     const mouseCoords = d3.pointer(event);
     selectionRect = svgMap.append("rect")
         .attr("x", mouseCoords[0])
@@ -372,7 +379,7 @@ function mousedown(event) {
         .attr("height", 0)
         .attr("width", 0);
 
-    svgMap.on("mousemove", mousemove);
+    //svgMap.on("mousemove", mousemove);
 }
 
 function mousemove(event) {
@@ -380,12 +387,21 @@ function mousemove(event) {
         return;
 
     const mouseCoords = d3.pointer(event);
+    console.log(mouseCoords);
     selectionRect.attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
                 .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
 }
 
 function mouseup() {
+    console.log("mouse up")
     if (!drawSelectionsMode)
         return;
-    svgMap.on("mousemove", null);
+
+    d3.select("#selections")
+        .append("p")
+        .attr("id", "sel")
+        .attr("name", "selection")
+        .text("Selection 1")
+
+    //svgMap.on("mousemove", null);
 }
