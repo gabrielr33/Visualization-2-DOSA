@@ -237,22 +237,22 @@ function drawSelection(event) {
     } else {
         selectionsCount++;
         selectionRect
-            .attr("id", "selectionRect" + selectionsCount)
+            .attr("id", "selection" + selectionsCount + "R")
             .attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
             .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
 
         d3.select("#selections")
             .append("p")
-            .attr("id", "selection" + selectionsCount)
-            .attr("name", "selection")
+            .attr("id", "selection" + selectionsCount + "P")
             .text("Selection " + selectionsCount)
             .append("input")
             .attr("type", "button")
             .attr("class", "button")
+            .attr("id", "selection" + selectionsCount)
             .attr("value", "Delete Selection")
             .on("click", function () {
-                d3.select("#selection" + selectionsCount).remove();         // TODO get the correct selections
-                d3.select("#selectionRect" + selectionsCount).remove();     // TODO get the correct rect
+                d3.select("#" + d3.select(this).attr("id") + "P").remove();
+                d3.select("#" + d3.select(this).attr("id") + "R").remove();
                 selectionsCount--;
             });
 
@@ -387,11 +387,17 @@ function displayData(highLevelInfo, country) {
     }
 }
 
+/**
+ * Redraws all edges on the map and calls the high level info update function
+ */
 function redrawEdgesAndUpdateInfo() {
     displayData();
     updateHighLevelInfo();
 }
 
+/**
+ * Updates all high level info entries
+ */
 function updateHighLevelInfo() {
     d3.select("#highlevelview")
         .selectAll("p")
