@@ -27,9 +27,21 @@ var betweenEdges = false;
 var backgroundEdges = false;
 
 var drawSelectionsMode = false;
+var startSelection = true;
 var selectionRect;
 var mouseCoords;
-var startSelection = true;
+
+var selectionsColors = [
+    "#d33135",
+    "#4986b2",
+    "#5aab56",
+    "#e88628",
+    "#964f9d",
+    "#22e0e0",
+    "#ffd500",
+    "#b4e931",
+    "#d60e92",
+    "#671d00"]
 
 var maxSelection = 10;
 var selectionsCount = 0;
@@ -187,7 +199,8 @@ function mousemove(event) {
     mouseCoords = d3.pointer(event);
     selectionRect.attr("width", Math.max(0, mouseCoords[0] - 0.5 - +selectionRect.attr("x")))
         .attr("height", Math.max(0, mouseCoords[1] - 0.5 - +selectionRect.attr("y")))
-        .attr("stroke", "#b30000")
+        //.attr("stroke", "#b30000")
+        .attr("stroke", selectionsColors[selectionsCount])
         .attr("stroke-width", 0.75)
         .attr("fill", "none")
         .attr("pointer-events", "none");
@@ -237,7 +250,7 @@ function drawSelection(event) {
     } else {
         selectionsCount++;
         selectionRect
-            .attr("id", "selection" + selectionsCount + "R")
+            .attr("id", "selection" + selectionsCount + "R")                                // TODO wenn man löscht und neu zeichnet, ist index falsch
             .attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
             .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
 
