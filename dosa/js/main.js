@@ -12,9 +12,9 @@ var flightListMonth = [];
 var airportList = [];
 
 var selectedCountries = {};
-var selectedCountriesWithinEdges = {};
-var selectedCountriesOutgoingEdges = {};
-var selectedCountriesIncomingEdges = {};
+//var selectedCountriesWithinEdges = {};
+//var selectedCountriesOutgoingEdges = {};
+//var selectedCountriesIncomingEdges = {};
 
 var svgMap;
 var svgRect;
@@ -30,6 +30,17 @@ var drawSelectionsMode = false;
 var startSelection = true;
 var selectionRect;
 var mouseCoords;
+
+var selections = [];
+var selectionCoords = [];
+
+var selectionCoordsStart = [];
+var selectionCoordsEnd = [];
+
+var selectedSelections = [false,false,false,false,false,false,false,false,false,false];
+var selectionsWithinEdges = [0,0,0,0,0,0,0,0,0,0];
+var selectionsOutgoingEdges = [0,0,0,0,0,0,0,0,0,0];
+var selectionsIncomingEdges = [0,0,0,0,0,0,0,0,0,0];
 
 var selectionsColors = [
     "#d33135",
@@ -60,21 +71,27 @@ function init() {
  * Initializes the filter checkboxes and inputs
  */
 function initFilters() {
-    d3.select("#withinEdges").on("change", updatedFilters);
-    d3.select("#betweenEdges").on("change", updatedFilters);
-    d3.select("#backgroundEdges").on("change", updatedFilters);
-    d3.select("#drawselections").on("change", updatedFilters);
+    d3.select("#withinEdges").on("change", updatedEdgeFilters);
+    d3.select("#betweenEdges").on("change", updatedEdgeFilters);
+    d3.select("#backgroundEdges").on("change", updatedEdgeFilters);
+    d3.select("#drawselections").on("change", updatedSelectionMode);
 }
 
 /**
- * If a filter has been changed the map has to bee updated
+ * If an edge filter has been changed the map has to be updated
  */
-function updatedFilters() {
+function updatedEdgeFilters() {
     withinEdges = d3.select("#withinEdges").property("checked");
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
-    drawSelectionsMode = d3.select("#drawselections").property("checked");
     redrawEdgesAndUpdateInfo();
+}
+
+/**
+ * If the selection mode has been changed
+ */
+function updatedSelectionMode(){
+    drawSelectionsMode = d3.select("#drawselections").property("checked");
 }
 
 function loadDataForMonth(month) {
@@ -121,10 +138,10 @@ function loadWorldMap() {
                 return d.properties.NAMESUM;
             })
             .attr("ICAO", function (d) {
-                selectedCountries[d.properties.ICAO] = false;
-                selectedCountriesWithinEdges[d.properties.ICAO] = 0;
-                selectedCountriesOutgoingEdges[d.properties.ICAO] = 0;
-                selectedCountriesIncomingEdges[d.properties.ICAO] = 0;
+                //selectedCountries[d.properties.ICAO] = false;
+                //selectedCountriesWithinEdges[d.properties.ICAO] = 0;
+                //selectedCountriesOutgoingEdges[d.properties.ICAO] = 0;
+                //selectedCountriesIncomingEdges[d.properties.ICAO] = 0;
                 return d.properties.ICAO;
             })
             .attr('d', geoPath)
@@ -212,10 +229,9 @@ function mousemove(event) {
 function selectedCountry(event) {
     if (drawSelectionsMode) {
         drawSelection(event);
-        return;
     }
 
-    if (d3.select(this).attr("fill") === "#83d0c9") {
+    /*if (d3.select(this).attr("fill") === "#83d0c9") {
         d3.select(this).attr("fill", "#35a79c")
         selectedCountries[d3.select(this).attr("ICAO")] = false;
 
@@ -226,7 +242,7 @@ function selectedCountry(event) {
         selectedCountries[d3.select(this).attr("ICAO")] = true;
 
         displayData(true, d3.select(this));
-    }
+    }*/
 }
 
 /**
@@ -246,6 +262,7 @@ function drawSelection(event) {
             .attr("height", 0)
             .attr("width", 0);
 
+        selectionCoordsStart = projection.invert([mouseCoords[0], mouseCoords[1]]);
         startSelection = false;
     } else {
         selectionsCount++;
@@ -264,12 +281,24 @@ function drawSelection(event) {
             .attr("id", "selection" + selectionsCount)
             .attr("value", "Delete Selection")
             .on("click", function () {
-                d3.select("#" + d3.select(this).attr("id") + "P").remove();
-                d3.select("#" + d3.select(this).attr("id") + "R").remove();
-                selectionsCount--;
+                var id = d3.select(this).attr("id");
+                d3.select("#" + id + "P").remove();
+                d3.select("#" + id + "R").remove();
+                selectedSelections[id.substring(id.length-1,id.length)-1] = false;
+                console.log(selectedSelections);
+                //selectionsCount--;
+                displayData(false, id.substring(id.length-1,id.length)-1);
             });
 
+        selectionCoordsEnd = projection.invert([mouseCoords[0], mouseCoords[1]]);
+        selectionCoords = [selectionCoordsStart, selectionCoordsEnd];
+        selections[selectionsCount-1] = selectionCoords;
+
+        selectedSelections[selectionsCount-1] = true;
+        console.log(selectedSelections);
+
         startSelection = true;
+        displayData(true, selectionsCount);
     }
 }
 
@@ -278,7 +307,7 @@ function drawSelection(event) {
  */
 function initMapZoom() {
     const zoom = d3.zoom()
-        .scaleExtent([1, 10]);
+        .scaleExtent([1, 20]);
 
     zoom.on('zoom', function (event) {
         if (drawSelectionsMode)
@@ -297,7 +326,7 @@ function initMapZoom() {
  * @param month
  */
 function loadData(month) {
-    this.flightListMonth = [];
+    flightListMonth = [];
 
     //Load the specified monthly data
     d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function (loadedRow) {
@@ -306,7 +335,7 @@ function loadData(month) {
     }).then(function () {
         //console.log(flightListMonth);
         console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
-        displayData();
+        //displayData();
         updateHighLevelInfo();
     });
 
@@ -326,7 +355,8 @@ function loadData(month) {
  * @returns {*[]} the filtered data
  */
 function filterData(withinEdges, betweenEdges, backgroundEdges) {
-    return flightListMonth.filter(function (d) {
+    // Filter flight list by edges
+    /*flightListMonth.filter(function (d) {
         const orig = d.origin.substring(0, 2);
         const dest = d.destination.substring(0, 2);
 
@@ -350,6 +380,112 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
             return backgroundEdges;
         } else
             return false;
+    });*/
+
+    // Filter flight list by selections
+    return flightListMonth.filter(function (d) {
+        const origCoords = [d.longitude_1, d.latitude_1];
+        const destCoords = [d.longitude_2, d.latitude_2];
+
+        for (i = 0; i < selectionsCount; i++) {
+            if (selectedSelections[i] === true) {
+                var selectionCoords = selections[i];
+                var selectionCoordStart = selectionCoords[0];
+                var selectionCoordEnd = selectionCoords[1];
+
+                if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+                    origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1] &&
+                    destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+                    destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                    if (withinEdges) {
+                        selectionsWithinEdges[i]++;
+                        return true;
+                    } else
+                        return false;
+                }
+                if (backgroundEdges) {
+                    if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+                        origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
+                        for (l = 0; l < selectionsCount; l++) {
+                            if (selectedSelections[l] === true) {
+                                selectionCoords = selections[l];
+                                selectionCoordStart = selectionCoords[0];
+                                selectionCoordEnd = selectionCoords[1];
+
+                                if (destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+                                    destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                                    if (betweenEdges) {
+                                        selectionsOutgoingEdges[i]++;
+                                        selectionsIncomingEdges[j]++;
+                                        return true;
+                                    } else
+                                        return false;
+                                }
+                            }
+                        }
+                        selectionsOutgoingEdges[i]++;
+                        return true;
+                    } else if (destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+                        destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                        for (m = 0; m < selectionsCount; m++) {
+                            if (selectedSelections[m] === true) {
+                                selectionCoords = selections[m];
+                                selectionCoordStart = selectionCoords[0];
+                                selectionCoordEnd = selectionCoords[1];
+
+                                if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+                                    origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
+                                    if (betweenEdges) {
+                                        selectionsOutgoingEdges[i]++;
+                                        selectionsIncomingEdges[j]++;
+                                        return true;
+                                    } else
+                                        return false;
+                                }
+                            }
+                        }
+                        selectionsIncomingEdges[i]++;
+                        return true;
+                    }
+                }
+                if (betweenEdges && !backgroundEdges) {
+                    if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+                        origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
+                        for (j = 0; j < selectionsCount; j++) {
+                            if (selectedSelections[j] === true) {
+                                selectionCoords = selections[j];
+                                selectionCoordStart = selectionCoords[0];
+                                selectionCoordEnd = selectionCoords[1];
+
+                                if (j !== i && destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+                                    destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                                    selectionsOutgoingEdges[i]++;
+                                    selectionsIncomingEdges[j]++;
+                                    return true;
+                                }
+                            }
+                        }
+                    } else if (destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+                        destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                        for (k = 0; k < selectionsCount; k++) {
+                            if (selectedSelections[k] === true) {
+                                selectionCoords = selections[k];
+                                selectionCoordStart = selectionCoords[0];
+                                selectionCoordEnd = selectionCoords[1];
+
+                                if (k !== i && origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+                                    origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
+                                    selectionsOutgoingEdges[k]++;
+                                    selectionsIncomingEdges[i]++;
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
     });
 }
 
@@ -358,7 +494,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
  * @param highLevelInfo specifies if the high level info has to be created or removed
  * @param country
  */
-function displayData(highLevelInfo, country) {
+function displayData(highLevelInfo, id) {
     d3.selectAll("line").remove();
     amountEdges = 0;
     resetEdgeCounters();
@@ -395,8 +531,8 @@ function displayData(highLevelInfo, country) {
     d3.select("#countedges")
         .text("Total of " + amountEdges + " edges");
 
-    if (country != null) {
-        highLevelInfo ? createHighLevelInfo(country) : removeHighLevelInfo(country);
+    if (id != null) {
+        highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);      // TODO wird noch vor linien zeichnen aufgerufen
     }
 }
 
@@ -416,10 +552,11 @@ function updateHighLevelInfo() {
         .selectAll("p")
         .each(function () {
             d3.select(this)
-                .text(d3.select(this).attr("name") +
-                    "; Within: " + selectedCountriesWithinEdges[d3.select(this).attr("ICAO")] +
-                    "; Outgoing: " + selectedCountriesOutgoingEdges[d3.select(this).attr("ICAO")] +
-                    "; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
+                .text(d3.select(this).attr("name"))
+                    //+
+                    //"; Within: " + selectedCountriesWithinEdges[d3.select(this).attr("ICAO")] +
+                    //"; Outgoing: " + selectedCountriesOutgoingEdges[d3.select(this).attr("ICAO")] +
+                    //"; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
         })
 }
 
@@ -427,7 +564,7 @@ function updateHighLevelInfo() {
  * Resets all the edge counter objects
  */
 function resetEdgeCounters() {
-    Object.keys(selectedCountriesWithinEdges).forEach(function (key) {
+    /*Object.keys(selectedCountriesWithinEdges).forEach(function (key) {
         selectedCountriesWithinEdges[key] = 0;
     });
     Object.keys(selectedCountriesOutgoingEdges).forEach(function (key) {
@@ -435,31 +572,31 @@ function resetEdgeCounters() {
     });
     Object.keys(selectedCountriesIncomingEdges).forEach(function (key) {
         selectedCountriesIncomingEdges[key] = 0;
-    });
+    });*/
 }
 
 /**
  * Creates a high level entry in the high level view
  * @param countryToCreate
  */
-function createHighLevelInfo(countryToCreate) {
+function createHighLevelInfo(idToCreate) {
+    console.log("create high level info: " + idToCreate)
+
     d3.select("#highlevelview")
         .append("p")
-        .attr("id", "highlevel" + countryToCreate.attr("namesum"))
-        .attr("name", countryToCreate.attr("name"))
-        .attr("ICAO", countryToCreate.attr("ICAO"))
-        .text(countryToCreate.attr("name") +
-            "; Within: " + selectedCountriesWithinEdges[countryToCreate.attr("ICAO")] +
-            "; Outgoing: " + selectedCountriesOutgoingEdges[countryToCreate.attr("ICAO")] +
-            "; Incoming: " + selectedCountriesIncomingEdges[countryToCreate.attr("ICAO")])
+        .attr("id", "highlevel" + idToCreate)
+        .text("Selection " + idToCreate +
+            "; Within: " + selectionsWithinEdges[idToCreate] +
+            "; Outgoing: " + selectionsOutgoingEdges[idToCreate] +
+            "; Incoming: " + selectionsIncomingEdges[idToCreate]);
 }
 
 /**
  * Removes the specified high level entry
  * @param countryToDelete
  */
-function removeHighLevelInfo(countryToDelete) {
-    d3.select("#highlevel" + countryToDelete.attr("namesum")).remove()
+function removeHighLevelInfo(idToCreate) {
+    d3.select("#highlevel" + idToCreate).remove()
 }
 
 // For the drawing of selections //
