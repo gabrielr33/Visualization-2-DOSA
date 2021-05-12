@@ -84,7 +84,8 @@ function updatedEdgeFilters() {
     withinEdges = d3.select("#withinEdges").property("checked");
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
-    redrawEdgesAndUpdateInfo();
+    displayData();
+    //redrawEdgesAndUpdateInfo();
 }
 
 /**
@@ -186,8 +187,6 @@ function loadAirports() {
         if (airportData)
             this.airportList.push(airportData);
     }).then(function () {
-        //console.log(this.airportList);
-
         svgMap.append('g').selectAll('circles')
             .data(airportList)
             .enter().append("circle")
@@ -300,6 +299,7 @@ function drawSelection(event) {
         startSelection = true;
         displayData(true, selectionsCount);
     }
+
 }
 
 /**
@@ -333,9 +333,7 @@ function loadData(month) {
         if (loadedRow)
             flightListMonth.push(loadedRow);
     }).then(function () {
-        //console.log(flightListMonth);
         console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
-        //displayData();
         updateHighLevelInfo();
     });
 
@@ -492,7 +490,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
 /**
  * Draws the edges on the map according to the selected countries
  * @param highLevelInfo specifies if the high level info has to be created or removed
- * @param country
+ * @param id
  */
 function displayData(highLevelInfo, id) {
     d3.selectAll("line").remove();
@@ -528,12 +526,13 @@ function displayData(highLevelInfo, id) {
         })
         .attr("pointer-events", "none");
 
+    if (id != null) {
+        highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);
+    }
+    updateHighLevelInfo();
+
     d3.select("#countedges")
         .text("Total of " + amountEdges + " edges");
-
-    if (id != null) {
-        highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);      // TODO wird noch vor linien zeichnen aufgerufen
-    }
 }
 
 /**
@@ -541,7 +540,7 @@ function displayData(highLevelInfo, id) {
  */
 function redrawEdgesAndUpdateInfo() {
     displayData();
-    updateHighLevelInfo();
+    //updateHighLevelInfo();
 }
 
 /**
@@ -551,12 +550,13 @@ function updateHighLevelInfo() {
     d3.select("#highlevelview")
         .selectAll("p")
         .each(function () {
+            let id = d3.select(this).attr("id");
+            id = id.substring(id.length-1,id.length)-1;
             d3.select(this)
-                .text(d3.select(this).attr("name"))
-                    //+
-                    //"; Within: " + selectedCountriesWithinEdges[d3.select(this).attr("ICAO")] +
-                    //"; Outgoing: " + selectedCountriesOutgoingEdges[d3.select(this).attr("ICAO")] +
-                    //"; Incoming: " + selectedCountriesIncomingEdges[d3.select(this).attr("ICAO")])
+                .text("Selection " + id +
+                    "; Within: " + selectionsWithinEdges[id] +
+                    "; Outgoing: " + selectionsOutgoingEdges[id] +
+                    "; Incoming: " + selectionsIncomingEdges[id]);
         })
 }
 
@@ -564,39 +564,37 @@ function updateHighLevelInfo() {
  * Resets all the edge counter objects
  */
 function resetEdgeCounters() {
-    /*Object.keys(selectedCountriesWithinEdges).forEach(function (key) {
-        selectedCountriesWithinEdges[key] = 0;
+    Object.keys(selectionsWithinEdges).forEach(function (key) {
+        selectionsWithinEdges[key] = 0;
     });
-    Object.keys(selectedCountriesOutgoingEdges).forEach(function (key) {
-        selectedCountriesOutgoingEdges[key] = 0;
+    Object.keys(selectionsOutgoingEdges).forEach(function (key) {
+        selectionsOutgoingEdges[key] = 0;
     });
-    Object.keys(selectedCountriesIncomingEdges).forEach(function (key) {
-        selectedCountriesIncomingEdges[key] = 0;
-    });*/
+    Object.keys(selectionsIncomingEdges).forEach(function (key) {
+        selectionsIncomingEdges[key] = 0;
+    });
 }
 
 /**
  * Creates a high level entry in the high level view
- * @param countryToCreate
+ * @param idToCreate
  */
 function createHighLevelInfo(idToCreate) {
-    console.log("create high level info: " + idToCreate)
-
     d3.select("#highlevelview")
         .append("p")
         .attr("id", "highlevel" + idToCreate)
         .text("Selection " + idToCreate +
-            "; Within: " + selectionsWithinEdges[idToCreate] +
-            "; Outgoing: " + selectionsOutgoingEdges[idToCreate] +
-            "; Incoming: " + selectionsIncomingEdges[idToCreate]);
+            "; Within: " + selectionsWithinEdges[idToCreate-1] +
+            "; Outgoing: " + selectionsOutgoingEdges[idToCreate-1] +
+            "; Incoming: " + selectionsIncomingEdges[idToCreate-1]);
 }
 
 /**
  * Removes the specified high level entry
- * @param countryToDelete
+ * @param idToDelete
  */
-function removeHighLevelInfo(idToCreate) {
-    d3.select("#highlevel" + idToCreate).remove()
+function removeHighLevelInfo(idToDelete) {
+    d3.select("#highlevel" + idToDelete).remove()
 }
 
 // For the drawing of selections //
