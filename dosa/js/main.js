@@ -11,11 +11,6 @@ var selectedMonth;
 var flightListMonth = [];
 var airportList = [];
 
-var selectedCountries = {};
-//var selectedCountriesWithinEdges = {};
-//var selectedCountriesOutgoingEdges = {};
-//var selectedCountriesIncomingEdges = {};
-
 var svgMap;
 var svgRect;
 var projection;
@@ -54,7 +49,7 @@ var selectionsColors = [
     "#d60e92",
     "#671d00"]
 
-var maxSelection = 10;
+var maxSelection = 5;
 var selectionsCount = 0;
 
 /**
@@ -85,7 +80,6 @@ function updatedEdgeFilters() {
     betweenEdges = d3.select("#betweenEdges").property("checked");
     backgroundEdges = d3.select("#backgroundEdges").property("checked");
     displayData();
-    //redrawEdgesAndUpdateInfo();
 }
 
 /**
@@ -93,11 +87,6 @@ function updatedEdgeFilters() {
  */
 function updatedSelectionMode(){
     drawSelectionsMode = d3.select("#drawselections").property("checked");
-}
-
-function loadDataForMonth(month) {
-    // TODO check for correct month input
-    loadData(month);
 }
 
 /**
@@ -138,42 +127,25 @@ function loadWorldMap() {
             .attr("namesum", function (d) {
                 return d.properties.NAMESUM;
             })
-            .attr("ICAO", function (d) {
-                //selectedCountries[d.properties.ICAO] = false;
-                //selectedCountriesWithinEdges[d.properties.ICAO] = 0;
-                //selectedCountriesOutgoingEdges[d.properties.ICAO] = 0;
-                //selectedCountriesIncomingEdges[d.properties.ICAO] = 0;
-                return d.properties.ICAO;
-            })
             .attr('d', geoPath)
             .attr('fill', '#000000')
             .attr('stroke', '#FFFFFF')
             .on("mouseover", function (event) {
-                if (d3.select(this).attr("fill") !== "#83d0c9" && !drawSelectionsMode) {
-                    d3.select(this).attr("fill", "#35a79c")
-                    d3.select(this).attr("stroke", "#35a79c")
-                }
+                d3.select(this).attr("fill", "#053c35")
+                d3.select(this).attr("stroke", "#FFFFFF")
                 d3.select("#countryname")
                     .text(d3.select(this).attr("name"));
-
             })
             .on("mouseout", function (event) {
-                if (d3.select(this).attr("fill") !== "#83d0c9" && !drawSelectionsMode) {
-                    d3.select(this).attr("fill", "#000000")
-                    d3.select(this).attr("stroke", "#FFFFFF")
-                }
+                d3.select(this).attr("fill", "#000000")
+                d3.select(this).attr("stroke", "#FFFFFF")
             })
-            //.on("mousedown", mousedown)
-            //.on("mouseup", mouseup);
-
-            /*.call(function(event) {
-                    d3.drag()
-                        .on("start", mousedown)
-                        //.on("drag", mousemove)
-                        .on("end", mouseup)
-            });*/
             .on("mousemove", mousemove)
-            .on("click", selectedCountry);
+            .on("click", function (event) {
+                if (drawSelectionsMode) {
+                    drawSelection(event);
+                }
+            });
 
         loadAirports();
     });
@@ -192,11 +164,11 @@ function loadAirports() {
             .enter().append("circle")
             .attr("r", 0.3)
             .attr("cx", function (d) {
-                var coords = projection([d.longitude, d.latitude])
+                const coords = projection([d.longitude, d.latitude]);
                 return coords[0];
             })
             .attr("cy", function (d) {
-                var coords = projection([d.longitude, d.latitude])
+                const coords = projection([d.longitude, d.latitude]);
                 return coords[1];
             })
             .attr('fill', '#ff5703')
@@ -205,8 +177,52 @@ function loadAirports() {
 }
 
 /**
+ * Get called from the UI if the load month button has been pressed
+ * @param month the monthly data to be loaded into the visualization
+ */
+function loadDataForMonth(month) {
+    loadData(month);        // TODO check for correct month input
+}
+
+/**
+ * Loads the flights from the csv file of the specified month
+ * @param month the monthly data to be loaded into the visualization
+ */
+function loadData(month) {
+    flightListMonth = [];
+
+    //Load the specified monthly data
+    d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function (loadedRow) {
+        if (loadedRow)
+            flightListMonth.push(loadedRow);
+    }).then(function () {
+        console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
+        updateHighLevelInfo();
+    });
+}
+
+/**
+ * Sets the map pan and zoom
+ */
+function initMapZoom() {
+    const zoom = d3.zoom()
+        .scaleExtent([1, 20]);
+
+    zoom.on('zoom', function (event) {
+        if (drawSelectionsMode)
+            return;
+
+        const {transform} = event;
+        svgMap.attr("transform", transform);
+        svgMap.attr("stroke-width", 1 / transform.k);
+    });
+
+    d3.select("#map").call(zoom);
+}
+
+/**
  * Triggers if a selection has been made in the draw selection mode
- * @param event
+ * @param event the mousemove event
  */
 function mousemove(event) {
     if (!drawSelectionsMode || startSelection)
@@ -215,7 +231,6 @@ function mousemove(event) {
     mouseCoords = d3.pointer(event);
     selectionRect.attr("width", Math.max(0, mouseCoords[0] - 0.5 - +selectionRect.attr("x")))
         .attr("height", Math.max(0, mouseCoords[1] - 0.5 - +selectionRect.attr("y")))
-        //.attr("stroke", "#b30000")
         .attr("stroke", selectionsColors[selectionsCount])
         .attr("stroke-width", 0.75)
         .attr("fill", "none")
@@ -223,30 +238,8 @@ function mousemove(event) {
 }
 
 /**
- * Sets the color of a country if it has been clicked and adds or removes the corresponding high level information
- */
-function selectedCountry(event) {
-    if (drawSelectionsMode) {
-        drawSelection(event);
-    }
-
-    /*if (d3.select(this).attr("fill") === "#83d0c9") {
-        d3.select(this).attr("fill", "#35a79c")
-        selectedCountries[d3.select(this).attr("ICAO")] = false;
-
-        displayData(false, d3.select(this));
-    } else {
-        d3.select(this).attr("fill", "#83d0c9")
-        d3.select(this).attr("stroke", "#FFFFFF")
-        selectedCountries[d3.select(this).attr("ICAO")] = true;
-
-        displayData(true, d3.select(this));
-    }*/
-}
-
-/**
- * Responsible for the selectionas drawing process
- * @param event
+ * Responsible for the selections drawing process
+ * @param event the mouse click event
  */
 function drawSelection(event) {
     if (selectionsCount >= maxSelection)
@@ -280,13 +273,13 @@ function drawSelection(event) {
             .attr("id", "selection" + selectionsCount)
             .attr("value", "Delete Selection")
             .on("click", function () {
-                var id = d3.select(this).attr("id");
+                const id = d3.select(this).attr("id");
+                const selectionNr = id.substring(id.length-1,id.length)-1;
                 d3.select("#" + id + "P").remove();
                 d3.select("#" + id + "R").remove();
-                selectedSelections[id.substring(id.length-1,id.length)-1] = false;
+                selectedSelections[selectionNr] = false;
                 console.log(selectedSelections);
-                //selectionsCount--;
-                displayData(false, id.substring(id.length-1,id.length)-1);
+                displayData(false, selectionNr);
             });
 
         selectionCoordsEnd = projection.invert([mouseCoords[0], mouseCoords[1]]);
@@ -299,50 +292,6 @@ function drawSelection(event) {
         startSelection = true;
         displayData(true, selectionsCount);
     }
-
-}
-
-/**
- * Sets the map pan and zoom
- */
-function initMapZoom() {
-    const zoom = d3.zoom()
-        .scaleExtent([1, 20]);
-
-    zoom.on('zoom', function (event) {
-        if (drawSelectionsMode)
-            return;
-
-        const {transform} = event;
-        svgMap.attr("transform", transform);
-        svgMap.attr("stroke-width", 1 / transform.k);
-    });
-
-    d3.select("#map").call(zoom);
-}
-
-/**
- * Loads the flights from the csv file of the specified month
- * @param month
- */
-function loadData(month) {
-    flightListMonth = [];
-
-    //Load the specified monthly data
-    d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function (loadedRow) {
-        if (loadedRow)
-            flightListMonth.push(loadedRow);
-    }).then(function () {
-        console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
-        updateHighLevelInfo();
-    });
-
-    /*d3.queue()
-        .defer(d3.csv, "./dataset/dataset_flights_europe/flightlist_20" + month + ".csv")
-        .await((function (loadedRow) {
-            if (loadedRow)
-                this.flightListMonth.push(loadedRow);
-        }).bind(this));*/
 }
 
 /**
@@ -490,32 +439,30 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
 /**
  * Draws the edges on the map according to the selected countries
  * @param highLevelInfo specifies if the high level info has to be created or removed
- * @param id
+ * @param id the id of the selection to be created or deleted
  */
 function displayData(highLevelInfo, id) {
     d3.selectAll("line").remove();
-    amountEdges = 0;
     resetEdgeCounters();
-
-    var filteredData = filterData(withinEdges, betweenEdges, backgroundEdges);
+    const filteredData = filterData(withinEdges, betweenEdges, backgroundEdges);
 
     svgMap.append('g').selectAll('lines')
         .data(filteredData)
         .enter().append("line")
         .attr("x1", function (d) {
-            var coordsStart = projection([d.longitude_1, d.latitude_1])
+            const coordsStart = projection([d.longitude_1, d.latitude_1]);
             return coordsStart[0];
         })
         .attr("y1", function (d) {
-            var coordsStart = projection([d.longitude_1, d.latitude_1])
+            const coordsStart = projection([d.longitude_1, d.latitude_1]);
             return coordsStart[1];
         })
         .attr("x2", function (d) {
-            var coordsEnd = projection([d.longitude_2, d.latitude_2])
+            const coordsEnd = projection([d.longitude_2, d.latitude_2]);
             return coordsEnd[0];
         })
         .attr("y2", function (d) {
-            var coordsEnd = projection([d.longitude_2, d.latitude_2])
+            const coordsEnd = projection([d.longitude_2, d.latitude_2]);
             return coordsEnd[1];
         })
         .attr('stroke', "#ffe900")
@@ -524,23 +471,15 @@ function displayData(highLevelInfo, id) {
             amountEdges++;
             return 0.1;
         })
+        //.attr("opacity", 0.2)                 // TODO causes performance problems...?!
         .attr("pointer-events", "none");
 
-    if (id != null) {
+    if (id != null)
         highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);
-    }
     updateHighLevelInfo();
 
     d3.select("#countedges")
         .text("Total of " + amountEdges + " edges");
-}
-
-/**
- * Redraws all edges on the map and calls the high level info update function
- */
-function redrawEdgesAndUpdateInfo() {
-    displayData();
-    //updateHighLevelInfo();
 }
 
 /**
@@ -557,13 +496,14 @@ function updateHighLevelInfo() {
                     "; Within: " + selectionsWithinEdges[id] +
                     "; Outgoing: " + selectionsOutgoingEdges[id] +
                     "; Incoming: " + selectionsIncomingEdges[id]);
-        })
+        });
 }
 
 /**
  * Resets all the edge counter objects
  */
 function resetEdgeCounters() {
+    amountEdges = 0;
     Object.keys(selectionsWithinEdges).forEach(function (key) {
         selectionsWithinEdges[key] = 0;
     });
@@ -577,7 +517,7 @@ function resetEdgeCounters() {
 
 /**
  * Creates a high level entry in the high level view
- * @param idToCreate
+ * @param idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
     d3.select("#highlevelview")
@@ -591,51 +531,8 @@ function createHighLevelInfo(idToCreate) {
 
 /**
  * Removes the specified high level entry
- * @param idToDelete
+ * @param idToDelete the id of the selection to be deleted
  */
 function removeHighLevelInfo(idToDelete) {
     d3.select("#highlevel" + idToDelete).remove()
 }
-
-// For the drawing of selections //
-/*function mousedown(event) {
-    if (!drawSelectionsMode)
-        return;
-
-    console.log("mouse down")
-
-    mouseCoords = d3.pointer(event);
-
-    selectionRect = svgMap.append("rect")
-        .attr("x", mouseCoords[0])
-        .attr("y", mouseCoords[1])
-        .attr("height", 0)
-        .attr("width", 0);
-
-    svgMap.on("mousemove", mousemove);
-}
-
-function mousemove(event) {
-    if (!drawSelectionsMode)
-        return;
-
-    mouseCoords = d3.pointer(event);
-    //console.log("mouse move");
-
-    selectionRect.attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
-                .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
-}
-
-function mouseup() {
-    console.log("mouse up")
-    if (!drawSelectionsMode)
-        return;
-
-    d3.select("#selections")
-        .append("p")
-        .attr("id", "sel")
-        .attr("name", "selection")
-        .text("Selection 1")
-
-    svgMap.on("mousemove", null);
-}*/
