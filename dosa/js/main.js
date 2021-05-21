@@ -309,24 +309,24 @@ function drawSelection(event) {
             .attr("value", "Delete Selection")
             .on("click", function () {
                 const id = d3.select(this).attr("id");
-                const selectionNr = id.substring(id.length-1,id.length)-1;
+                const selectionNr = parseInt(id.substring(id.length-1,id.length));
                 d3.select("#" + id + "P").remove();
                 d3.select("#" + id + "R").remove();
-                selectedSelections[selectionNr+1] = false;
-                selectionsCount--;
+                selectedSelections[selectionNr] = false;
                 console.log(selectedSelections);
-                displayData(false, selectionNr);
+                selectionsCount--;
+                displayData(false, selectionNr+1);
             });
 
         selectionCoordsEnd = projection.invert([mouseCoords[0], mouseCoords[1]]);
         selectionCoords = [selectionCoordsStart, selectionCoordsEnd];
-        selections[selectionColor-1] = selectionCoords;
+        selections[selectionColor] = selectionCoords;
 
         selectedSelections[selectionColor] = true;
         console.log(selectedSelections);
 
         startSelection = true;
-        displayData(true, selectionColor);
+        displayData(true, selectionColor+1);
     }
 }
 
@@ -343,7 +343,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
         const origCoords = [d.longitude_1, d.latitude_1];
         const destCoords = [d.longitude_2, d.latitude_2];
 
-        for (let i = 0; i < selectionsCount; i++) {
+        for (let i = 0; i < maxSelection; i++) {
             if (selectedSelections[i] === true) {
                 let selectionCoords = selections[i];
 
@@ -355,34 +355,42 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         return false;
                 }
                 if (backgroundEdges) {
-                    if (checkCoords(selectionCoords, origCoords) || checkCoords(selectionCoords, destCoords)) {
-                        for (let j = 0; j < selectionsCount; j++) {
-                            if (selectedSelections[j] === true) {
-                                let selectionCoords2 = selections[j];
-
-                                if (betweenEdges) {
-                                    if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords)) {
+                    if (checkCoords(selectionCoords, origCoords)) {
+                        for (let l = 0; l < maxSelection; l++) {
+                            if (selectedSelections[l] === true) {
+                                selectionCoords2 = selections[l];
+                                if (checkCoords(selectionCoords2, destCoords)) {
+                                    if (betweenEdges) {
                                         selectionsOutgoingEdges[i]++;
-                                        selectionsIncomingEdges[j]++;
+                                        selectionsIncomingEdges[l]++;
                                         return true;
-                                    } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords)) {
-                                        selectionsOutgoingEdges[j]++;
-                                        selectionsIncomingEdges[i]++;
-                                        return true;
-                                    }
-                                } else
-                                    return false;
+                                    } else
+                                        return false;
+                                }
                             }
                         }
-                        if (checkCoords(selectionCoords, origCoords) && !checkCoords(selectionCoords, destCoords))
-                            selectionsOutgoingEdges[i]++;
-                        else if (!checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords, destCoords))
-                            selectionsIncomingEdges[i]++;
+                        selectionsOutgoingEdges[i]++;
+                        return true;
+                    } else if (checkCoords(selectionCoords, destCoords)) {
+                        for (let m = 0; m < maxSelection; m++) {
+                            if (selectedSelections[m] === true) {
+                                selectionCoords2 = selections[m];
+                                if (checkCoords(selectionCoords2, origCoords)) {
+                                    if (betweenEdges) {
+                                        selectionsOutgoingEdges[m]++;
+                                        selectionsIncomingEdges[i]++;
+                                        return true;
+                                    } else
+                                        return false;
+                                }
+                            }
+                        }
+                        selectionsIncomingEdges[i]++;
                         return true;
                     }
                 }
                 if (betweenEdges && !backgroundEdges) {
-                    for (let k = 0; k < selectionsCount; k++) {
+                    for (let k = 0; k < maxSelection; k++) {
                         if (selectedSelections[k] === true) {
                             selectionCoords2 = selections[k]
                             if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
@@ -403,6 +411,13 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
     });
 }
 
+/**
+ * Checks whether the origin coordinates or the destination coordinates of a flight entry lie within a destination coordinate rect
+ * @param selectionCoords the coordinates of the selection rect
+ * @param origCoords the coordinates of the origin airport of the entry
+ * @param destCoords the coordinates of the destinatiopn airport of the entry
+ * @returns {boolean}
+ */
 function checkCoords(selectionCoords, origCoords, destCoords){
     if (selectionCoords != null) {
         selectionCoordStart = selectionCoords[0];
@@ -436,6 +451,7 @@ function checkCoords(selectionCoords, origCoords, destCoords){
 function displayData(highLevelInfo, id) {
     d3.selectAll("line").remove();
     resetEdgeCounters();
+
     const filteredData = filterData(withinEdges, betweenEdges, backgroundEdges);
 
     svgMap.append('g').selectAll('lines')
@@ -466,7 +482,7 @@ function displayData(highLevelInfo, id) {
         //.attr("opacity", 0.2)                 // TODO causes performance problems...?!
         .attr("pointer-events", "none");
 
-    if (id != null)
+    if (id !== -1)
         highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);
     updateHighLevelInfo();
 
@@ -512,13 +528,14 @@ function resetEdgeCounters() {
  * @param idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
+    let text = "Selection " + idToCreate +
+        "; Within: " + selectionsWithinEdges[idToCreate] +
+        "; Outgoing: " + selectionsOutgoingEdges[idToCreate] +
+        "; Incoming: " + selectionsIncomingEdges[idToCreate];
     d3.select("#highlevelview")
         .append("p")
         .attr("id", "highlevel" + idToCreate)
-        .text("Selection " + idToCreate +
-            "; Within: " + selectionsWithinEdges[idToCreate-1] +
-            "; Outgoing: " + selectionsOutgoingEdges[idToCreate-1] +
-            "; Incoming: " + selectionsIncomingEdges[idToCreate-1]);
+        .text(text);
 }
 
 /**
