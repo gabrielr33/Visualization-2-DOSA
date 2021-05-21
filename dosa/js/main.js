@@ -334,16 +334,11 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
         const origCoords = [d.longitude_1, d.latitude_1];
         const destCoords = [d.longitude_2, d.latitude_2];
 
-        for (i = 0; i < selectionsCount; i++) {
+        for (let i = 0; i < selectionsCount; i++) {
             if (selectedSelections[i] === true) {
-                var selectionCoords = selections[i];
-                var selectionCoordStart = selectionCoords[0];
-                var selectionCoordEnd = selectionCoords[1];
+                let selectionCoords = selections[i];
 
-                if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-                    origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1] &&
-                    destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-                    destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                if (checkCoords(selectionCoords, origCoords, destCoords)) {
                     if (withinEdges) {
                         selectionsWithinEdges[i]++;
                         return true;
@@ -351,19 +346,44 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         return false;
                 }
                 if (backgroundEdges) {
-                    if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-                        origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
-                        for (l = 0; l < selectionsCount; l++) {
-                            if (selectedSelections[l] === true) {
-                                selectionCoords = selections[l];
-                                selectionCoordStart = selectionCoords[0];
-                                selectionCoordEnd = selectionCoords[1];
+                    if (checkCoords(selectionCoords, origCoords) || checkCoords(selectionCoords, destCoords)) {
+                        for (let j = 0; j < selectionsCount; j++) {
+                            if (selectedSelections[j] === true) {
+                                let selectionCoords2 = selections[j];
 
-                                if (destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-                                    destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
-                                    if (betweenEdges) {
+                                if (betweenEdges) {
+                                    if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords)) {
                                         selectionsOutgoingEdges[i]++;
                                         selectionsIncomingEdges[j]++;
+                                        return true;
+                                    } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords)) {
+                                        selectionsOutgoingEdges[j]++;
+                                        selectionsIncomingEdges[i]++;
+                                        return true;
+                                    }
+                                } else
+                                    return false;
+                            }
+                        }
+                        if (checkCoords(selectionCoords, origCoords) && !checkCoords(selectionCoords, destCoords))
+                            selectionsOutgoingEdges[i]++;
+                        else if (!checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords, destCoords))
+                            selectionsIncomingEdges[i]++;
+                        return true;
+                    }
+                }
+
+
+
+                    // TODO OLD VERSION
+                    /*if (checkCoords(selectionCoords, origCoords)) {
+                        for (let l = 0; l < selectionsCount; l++) {
+                            if (selectedSelections[l] === true) {
+                                selectionCoords = selections[l];
+                                if (checkCoords(selectionCoords, destCoords)) {
+                                    if (betweenEdges) {
+                                        selectionsOutgoingEdges[i]++;
+                                        selectionsIncomingEdges[l]++;
                                         return true;
                                     } else
                                         return false;
@@ -372,19 +392,14 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         }
                         selectionsOutgoingEdges[i]++;
                         return true;
-                    } else if (destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-                        destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
-                        for (m = 0; m < selectionsCount; m++) {
+                    } else if (checkCoords(selectionCoords, destCoords)) {
+                        for (let m = 0; m < selectionsCount; m++) {
                             if (selectedSelections[m] === true) {
                                 selectionCoords = selections[m];
-                                selectionCoordStart = selectionCoords[0];
-                                selectionCoordEnd = selectionCoords[1];
-
-                                if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-                                    origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
+                                if (checkCoords(selectionCoords, origCoords)) {
                                     if (betweenEdges) {
-                                        selectionsOutgoingEdges[i]++;
-                                        selectionsIncomingEdges[j]++;
+                                        selectionsOutgoingEdges[m]++;
+                                        selectionsIncomingEdges[i]++;
                                         return true;
                                     } else
                                         return false;
@@ -393,47 +408,84 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         }
                         selectionsIncomingEdges[i]++;
                         return true;
-                    }
-                }
+                    }*/
+
+
+
+
+
+
                 if (betweenEdges && !backgroundEdges) {
-                    if (origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-                        origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
-                        for (j = 0; j < selectionsCount; j++) {
+                    for (let k = 0; k < selectionsCount; k++) {
+                        if (selectedSelections[k] === true) {
+                            selectionCoords2 = selections[k]
+                                if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
+                                    selectionsOutgoingEdges[i]++;
+                                    selectionsIncomingEdges[k]++;
+                                    return true;
+                                } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
+                                    selectionsOutgoingEdges[k]++;
+                                    selectionsIncomingEdges[i]++;
+                                    return true;
+                                }
+                        }
+                    }
+
+
+                    // TODO OLD VERSION
+                    /*if (checkCoords(selectionCoords, origCoords)) {
+                        for (let j = 0; j < selectionsCount; j++) {
                             if (selectedSelections[j] === true) {
                                 selectionCoords = selections[j];
-                                selectionCoordStart = selectionCoords[0];
-                                selectionCoordEnd = selectionCoords[1];
-
-                                if (j !== i && destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-                                    destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
+                                if (j !== i && checkCoords(selectionCoords, destCoords)) {
                                     selectionsOutgoingEdges[i]++;
                                     selectionsIncomingEdges[j]++;
                                     return true;
                                 }
                             }
                         }
-                    } else if (destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-                        destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1]) {
-                        for (k = 0; k < selectionsCount; k++) {
+                    } else if (checkCoords(selectionCoords, destCoords)) {
+                        for (let k = 0; k < selectionsCount; k++) {
                             if (selectedSelections[k] === true) {
                                 selectionCoords = selections[k];
-                                selectionCoordStart = selectionCoords[0];
-                                selectionCoordEnd = selectionCoords[1];
-
-                                if (k !== i && origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-                                    origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1]) {
+                                if (k !== i && checkCoords(selectionCoords, origCoords)) {
                                     selectionsOutgoingEdges[k]++;
                                     selectionsIncomingEdges[i]++;
                                     return true;
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
         }
         return false;
     });
+}
+
+function checkCoords(selectionCoords, origCoords, destCoords){
+    if (selectionCoords != null) {
+        selectionCoordStart = selectionCoords[0];
+        selectionCoordEnd = selectionCoords[1];
+    } else
+        return false;
+
+    if (origCoords != null && destCoords != null && selectionCoordStart != null && selectionCoordEnd != null) {
+        return origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+            origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1] &&
+            destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+            destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1];
+    }
+    else if (origCoords == null && destCoords != null && selectionCoordStart != null && selectionCoordEnd != null){
+        return destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
+            destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1];
+    }
+    else if (origCoords != null && destCoords == null && selectionCoordStart != null && selectionCoordEnd != null) {
+        return origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
+            origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1];
+    }
+    else
+        return false;
 }
 
 /**
