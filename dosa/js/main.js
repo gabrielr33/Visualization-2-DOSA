@@ -267,6 +267,17 @@ function drawSelection(event) {
             .append("p")
             .attr("id", "selection" + selectionsCount + "P")
             .text("Selection " + selectionsCount)
+            .on("mouseover", function () {
+                let sel = d3.select(this).attr("id");
+                sel = "#" + sel.substring(0, sel.length-1) + "R";
+                d3.select(sel).attr('stroke', '#FFFFFF');
+            })
+            .on("mouseout", function () {
+                let sel = d3.select(this).attr("id");
+                let nr = sel.substring(9, sel.length-1) - 1;
+                sel = "#" + sel.substring(0, sel.length-1) + "R";
+                d3.select(sel).attr('stroke', selectionsColors[nr]);
+            })
             .append("input")
             .attr("type", "button")
             .attr("class", "button")
