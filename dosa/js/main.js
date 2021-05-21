@@ -1,5 +1,5 @@
 /**
- * Author: Gabriel Ratschiller
+ * Author: Gabriel Ratschiller & Martin Crepaz
  * Date: 03.04.2021
  */
 
@@ -38,16 +38,16 @@ var selectionsOutgoingEdges = [0,0,0,0,0];
 var selectionsIncomingEdges = [0,0,0,0,0];
 
 var selectionsColors = [
-    "#d33135",
-    "#4986b2",
-    "#5aab56",
-    "#e88628",
-    "#964f9d",
-    "#22e0e0",
-    "#ffd500",
-    "#b4e931",
-    "#d60e92",
-    "#671d00"]
+    '#D33135',
+    '#4986B2',
+    '#5AAB56',
+    '#E88628',
+    '#964F9D',
+    '#22E0E0',
+    '#FFD500',
+    '#B4E931',
+    '#D60E92',
+    '#671D00']
 var selectionColor;
 
 var maxSelection = 5;
@@ -67,19 +67,19 @@ function init() {
  * Initializes the filter checkboxes and inputs
  */
 function initFilters() {
-    d3.select("#withinEdges").on("change", updatedEdgeFilters);
-    d3.select("#betweenEdges").on("change", updatedEdgeFilters);
-    d3.select("#backgroundEdges").on("change", updatedEdgeFilters);
-    d3.select("#drawselections").on("change", updatedSelectionMode);
+    d3.select('#withinEdges').on('change', updatedEdgeFilters);
+    d3.select('#betweenEdges').on('change', updatedEdgeFilters);
+    d3.select('#backgroundEdges').on('change', updatedEdgeFilters);
+    d3.select('#drawselections').on('change', updatedSelectionMode);
 }
 
 /**
  * If an edge filter has been changed the map has to be updated
  */
 function updatedEdgeFilters() {
-    withinEdges = d3.select("#withinEdges").property("checked");
-    betweenEdges = d3.select("#betweenEdges").property("checked");
-    backgroundEdges = d3.select("#backgroundEdges").property("checked");
+    withinEdges = d3.select('#withinEdges').property('checked');
+    betweenEdges = d3.select('#betweenEdges').property('checked');
+    backgroundEdges = d3.select('#backgroundEdges').property('checked');
     displayData();
 }
 
@@ -87,64 +87,63 @@ function updatedEdgeFilters() {
  * If the selection mode has been changed
  */
 function updatedSelectionMode(){
-    drawSelectionsMode = d3.select("#drawselections").property("checked");
+    drawSelectionsMode = d3.select('#drawselections').property('checked');
 }
 
 /**
  * Loads the european map from the topojson file
  */
 function loadWorldMap() {
-    var countries;
+    let countries;
 
     //Load the world map from topojson
     d3.json('./dataset/europe_map_ICAO.json').then(function (worldData) {
         if (worldData)
             countries = topojson.feature(worldData, worldData.objects.europe).features;
 
-        var margin = {top: 50, left: 50, right: 50, bottom: 50},
+        const margin = {top: 50, left: 50, right: 50, bottom: 50},
             height = 600 - margin.top - margin.bottom,
             width = 900 - margin.left - margin.right;
 
-        svgMap = d3.select("#map")
+        svgMap = d3.select('#map')
             .append('svg')
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
-            .append("g")
-            .attr("transform", "translate(" + (2 * margin.left) + "," + margin.top + ")");
+            .attr('height', height + margin.top + margin.bottom)
+            .attr('width', width + margin.left + margin.right)
+            .append('g')
+            .attr('transform', 'translate(' + (2 * margin.left) + ',' + margin.top + ')');
 
         projection = d3.geoMercator()
             .translate([width / 3, height * 1.7])
             .scale(500)
 
-        var geoPath = d3.geoPath()
-            .projection(projection)
+        const geoPath = d3.geoPath()
+            .projection(projection);
 
         svgMap.append('g').selectAll('path')
             .data(countries)
             .join('path')
-            .attr("name", function (d) {
+            .attr('name', function (d) {
                 return d.properties.NAME;
             })
-            .attr("namesum", function (d) {
+            .attr('namesum', function (d) {
                 return d.properties.NAMESUM;
             })
             .attr('d', geoPath)
             .attr('fill', '#000000')
             .attr('stroke', '#FFFFFF')
-            .on("mouseover", function (event) {
-                d3.select(this).attr("fill", "#053c35")
-                d3.select(this).attr("stroke", "#FFFFFF")
-                d3.select("#countryname")
-                    .text(d3.select(this).attr("name"));
+            .on('mouseover', function () {
+                d3.select(this).attr('fill', '#053C35')
+                d3.select(this).attr('stroke', '#FFFFFF')
+                d3.select('#countryname')
+                    .text(d3.select(this).attr('name'));
             })
-            .on("mouseout", function (event) {
-                d3.select(this).attr("fill", "#000000")
-                d3.select(this).attr("stroke", "#FFFFFF")
+            .on('mouseout', function () {
+                d3.select(this).attr('fill', '#000000')
+                d3.select(this).attr('stroke', '#FFFFFF')
             })
-            .on("mousemove", mousemove)
-            .on("click", function (event) {
+            .on('mousemove', mousemove)
+            .on('click', function (event) {
                 if (drawSelectionsMode) {
-
                     drawSelection(event);
                 }
             });
@@ -163,18 +162,18 @@ function loadAirports() {
     }).then(function () {
         svgMap.append('g').selectAll('circles')
             .data(airportList)
-            .enter().append("circle")
-            .attr("r", 0.3)
-            .attr("cx", function (d) {
+            .enter().append('circle')
+            .attr('r', 0.3)
+            .attr('cx', function (d) {
                 const coords = projection([d.longitude, d.latitude]);
                 return coords[0];
             })
-            .attr("cy", function (d) {
+            .attr('cy', function (d) {
                 const coords = projection([d.longitude, d.latitude]);
                 return coords[1];
             })
-            .attr('fill', '#ff5703')
-            .attr("pointer-events", "none");
+            .attr('fill', '#FFFFFF')
+            .attr('pointer-events', 'none');
     });
 }
 
@@ -198,7 +197,7 @@ function loadData(month) {
         if (loadedRow)
             flightListMonth.push(loadedRow);
     }).then(function () {
-        console.log("Loaded data for " + month + ": " + flightListMonth.length + " flights found!")
+        console.log('Loaded data for ' + month + ': ' + flightListMonth.length + ' flights found!')
         updateHighLevelInfo();
     });
 }
@@ -215,11 +214,11 @@ function initMapZoom() {
             return;
 
         const {transform} = event;
-        svgMap.attr("transform", transform);
-        svgMap.attr("stroke-width", 1 / transform.k);
+        svgMap.attr('transform', transform);
+        svgMap.attr('stroke-width', 1 / transform.k);
     });
 
-    d3.select("#map").call(zoom);
+    d3.select('#map').call(zoom);
 }
 
 /**
@@ -231,15 +230,15 @@ function mousemove(event) {
         return;
 
     mouseCoords = d3.pointer(event);
-    selectionRect.attr("width", Math.max(0, mouseCoords[0] - 0.5 - +selectionRect.attr("x")))
-        .attr("height", Math.max(0, mouseCoords[1] - 0.5 - +selectionRect.attr("y")))
-        .attr("stroke", function (){
+    selectionRect.attr('width', Math.max(0, mouseCoords[0] - 0.5 - +selectionRect.attr('x')))
+        .attr('height', Math.max(0, mouseCoords[1] - 0.5 - +selectionRect.attr('y')))
+        .attr('stroke', function (){
             if (selectionColor !== -1)
                 return selectionsColors[selectionColor];
         })
-        .attr("stroke-width", 0.75)
-        .attr("fill", "none")
-        .attr("pointer-events", "none");
+        .attr('stroke-width', 0.75)
+        .attr('fill', 'none')
+        .attr('pointer-events', 'none');
 }
 
 /**
@@ -266,11 +265,11 @@ function drawSelection(event) {
 
     mouseCoords = d3.pointer(event);
     if (startSelection) {
-        selectionRect = svgMap.append("rect")
-            .attr("x", mouseCoords[0])
-            .attr("y", mouseCoords[1])
-            .attr("height", 0)
-            .attr("width", 0);
+        selectionRect = svgMap.append('rect')
+            .attr('x', mouseCoords[0])
+            .attr('y', mouseCoords[1])
+            .attr('height', 0)
+            .attr('width', 0);
 
         selectionColor = findFirstFreeSelectionsSlot();
         selectionCoordsStart = projection.invert([mouseCoords[0], mouseCoords[1]]);
@@ -278,40 +277,40 @@ function drawSelection(event) {
     } else {
         selectionsCount++;
         selectionRect
-            .attr("id", function () {
+            .attr('id', function () {
                 if (selectionColor !== -1)
-                    return "selection" + selectionColor + "R";})
-            .attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
-            .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
+                    return 'selection' + selectionColor + 'R';})
+            .attr('width', Math.max(0, mouseCoords[0] - +selectionRect.attr('x')))
+            .attr('height', Math.max(0, mouseCoords[1] - +selectionRect.attr('y')));
 
-        d3.select("#selections")
-            .append("p")
-            .attr("id", function (){
+        d3.select('#selections')
+            .append('p')
+            .attr('id', function (){
                 if (selectionColor !== -1)
-                    return "selection" + selectionColor + "P";
+                    return 'selection' + selectionColor + 'P';
             })
-            .text("Selection " + selectionColor)
-            .on("mouseover", function () {
-                let sel = d3.select(this).attr("id");
-                sel = "#" + sel.substring(0, sel.length-1) + "R";
+            .text('Selection ' + selectionColor)
+            .on('mouseover', function () {
+                let sel = d3.select(this).attr('id');
+                sel = '#' + sel.substring(0, sel.length-1) + 'R';
                 d3.select(sel).attr('stroke', '#FFFFFF');
             })
-            .on("mouseout", function () {
-                let sel = d3.select(this).attr("id");
+            .on('mouseout', function () {
+                let sel = d3.select(this).attr('id');
                 let nr = sel.substring(9, sel.length-1);
-                sel = "#" + sel.substring(0, sel.length-1) + "R";
+                sel = '#' + sel.substring(0, sel.length-1) + 'R';
                 d3.select(sel).attr('stroke', selectionsColors[nr]);
             })
-            .append("input")
-            .attr("type", "button")
-            .attr("class", "button")
-            .attr("id", "selection" + selectionColor)
-            .attr("value", "Delete Selection")
-            .on("click", function () {
-                const id = d3.select(this).attr("id");
+            .append('input')
+            .attr('type', 'button')
+            .attr('class', 'button')
+            .attr('id', 'selection' + selectionColor)
+            .attr('value', 'Delete Selection')
+            .on('click', function () {
+                const id = d3.select(this).attr('id');
                 const selectionNr = parseInt(id.substring(id.length-1,id.length));
-                d3.select("#" + id + "P").remove();
-                d3.select("#" + id + "R").remove();
+                d3.select('#' + id + 'P').remove();
+                d3.select('#' + id + 'R').remove();
                 selectedSelections[selectionNr] = false;
                 console.log(selectedSelections);
                 selectionsCount--;
@@ -419,25 +418,28 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
  * @returns {boolean}
  */
 function checkCoords(selectionCoords, origCoords, destCoords){
+    let selCoordsStart;
+    let selCoordsEnd;
+
     if (selectionCoords != null) {
-        selectionCoordStart = selectionCoords[0];
-        selectionCoordEnd = selectionCoords[1];
+        selCoordsStart = selectionCoords[0];
+        selCoordsEnd = selectionCoords[1];
     } else
         return false;
 
     if (origCoords != null && destCoords != null && selectionCoordStart != null && selectionCoordEnd != null) {
-        return origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-            origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1] &&
-            destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-            destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1];
+        return origCoords[0] >= selCoordsStart[0] && origCoords[0] < selCoordsEnd[0] &&
+            origCoords[1] <= selCoordsStart[1] && origCoords[1] > selCoordsEnd[1] &&
+            destCoords[0] >= selCoordsStart[0] && destCoords[0] < selCoordsEnd[0] &&
+            destCoords[1] <= selCoordsStart[1] && destCoords[1] > selCoordsEnd[1];
     }
-    else if (origCoords == null && destCoords != null && selectionCoordStart != null && selectionCoordEnd != null){
-        return destCoords[0] >= selectionCoordStart[0] && destCoords[0] < selectionCoordEnd[0] &&
-            destCoords[1] <= selectionCoordStart[1] && destCoords[1] > selectionCoordEnd[1];
+    else if (origCoords == null && destCoords != null && selCoordsStart != null && selCoordsEnd != null){
+        return destCoords[0] >= selCoordsStart[0] && destCoords[0] < selCoordsEnd[0] &&
+            destCoords[1] <= selCoordsStart[1] && destCoords[1] > selCoordsEnd[1];
     }
-    else if (origCoords != null && destCoords == null && selectionCoordStart != null && selectionCoordEnd != null) {
-        return origCoords[0] >= selectionCoordStart[0] && origCoords[0] < selectionCoordEnd[0] &&
-            origCoords[1] <= selectionCoordStart[1] && origCoords[1] > selectionCoordEnd[1];
+    else if (origCoords != null && destCoords == null && selCoordsStart != null && selCoordsEnd != null) {
+        return origCoords[0] >= selCoordsStart[0] && origCoords[0] < selCoordsEnd[0] &&
+            origCoords[1] <= selCoordsStart[1] && origCoords[1] > selCoordsEnd[1];
     }
     else
         return false;
@@ -449,61 +451,61 @@ function checkCoords(selectionCoords, origCoords, destCoords){
  * @param id the id of the selection to be created or deleted
  */
 function displayData(highLevelInfo, id) {
-    d3.selectAll("line").remove();
+    d3.selectAll('line').remove();
     resetEdgeCounters();
 
     const filteredData = filterData(withinEdges, betweenEdges, backgroundEdges);
 
     svgMap.append('g').selectAll('lines')
         .data(filteredData)
-        .enter().append("line")
-        .attr("x1", function (d) {
+        .enter().append('line')
+        .attr('x1', function (d) {
             const coordsStart = projection([d.longitude_1, d.latitude_1]);
             return coordsStart[0];
         })
-        .attr("y1", function (d) {
+        .attr('y1', function (d) {
             const coordsStart = projection([d.longitude_1, d.latitude_1]);
             return coordsStart[1];
         })
-        .attr("x2", function (d) {
+        .attr('x2', function (d) {
             const coordsEnd = projection([d.longitude_2, d.latitude_2]);
             return coordsEnd[0];
         })
-        .attr("y2", function (d) {
+        .attr('y2', function (d) {
             const coordsEnd = projection([d.longitude_2, d.latitude_2]);
             return coordsEnd[1];
         })
-        .attr('stroke', "#ffe900")
-        //.attr("stroke-width", Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
-        .attr("stroke-width", function () {
+        .attr('stroke', '#FFE900')
+        //.attr('stroke-width', Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
+        .attr('stroke-width', function () {
             amountEdges++;
             return 0.1;
         })
-        //.attr("opacity", 0.2)                 // TODO causes performance problems...?!
-        .attr("pointer-events", "none");
+        //.attr('opacity', 0.2)                 // TODO causes performance problems...?!
+        .attr('pointer-events', 'none');
 
     if (id !== -1)
         highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);
     updateHighLevelInfo();
 
-    d3.select("#countedges")
-        .text("Total of " + amountEdges + " edges");
+    d3.select('#countedges')
+        .text('Total of ' + amountEdges + ' edges');
 }
 
 /**
  * Updates all high level info entries
  */
 function updateHighLevelInfo() {
-    d3.select("#highlevelview")
-        .selectAll("p")
+    d3.select('#highlevelview')
+        .selectAll('p')
         .each(function () {
-            let id = d3.select(this).attr("id");
+            let id = d3.select(this).attr('id');
             id = id.substring(id.length-1,id.length)-1;
             d3.select(this)
-                .text("Selection " + id +
-                    "; Within: " + selectionsWithinEdges[id] +
-                    "; Outgoing: " + selectionsOutgoingEdges[id] +
-                    "; Incoming: " + selectionsIncomingEdges[id]);
+                .text('Selection ' + id +
+                    '; Within: ' + selectionsWithinEdges[id] +
+                    '; Outgoing: ' + selectionsOutgoingEdges[id] +
+                    '; Incoming: ' + selectionsIncomingEdges[id]);
         });
 }
 
@@ -528,13 +530,13 @@ function resetEdgeCounters() {
  * @param idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
-    let text = "Selection " + idToCreate +
-        "; Within: " + selectionsWithinEdges[idToCreate] +
-        "; Outgoing: " + selectionsOutgoingEdges[idToCreate] +
-        "; Incoming: " + selectionsIncomingEdges[idToCreate];
-    d3.select("#highlevelview")
-        .append("p")
-        .attr("id", "highlevel" + idToCreate)
+    let text = 'Selection ' + idToCreate +
+        '; Within: ' + selectionsWithinEdges[idToCreate] +
+        '; Outgoing: ' + selectionsOutgoingEdges[idToCreate] +
+        '; Incoming: ' + selectionsIncomingEdges[idToCreate];
+    d3.select('#highlevelview')
+        .append('p')
+        .attr('id', 'highlevel' + idToCreate)
         .text(text);
 }
 
@@ -543,5 +545,5 @@ function createHighLevelInfo(idToCreate) {
  * @param idToDelete the id of the selection to be deleted
  */
 function removeHighLevelInfo(idToDelete) {
-    d3.select("#highlevel" + idToDelete).remove()
+    d3.select('#highlevel' + idToDelete).remove()
 }
