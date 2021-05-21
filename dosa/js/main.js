@@ -302,34 +302,7 @@ function drawSelection(event) {
  * @returns {*[]} the filtered data
  */
 function filterData(withinEdges, betweenEdges, backgroundEdges) {
-    // Filter flight list by edges
-    /*flightListMonth.filter(function (d) {
-        const orig = d.origin.substring(0, 2);
-        const dest = d.destination.substring(0, 2);
-
-        if (orig === dest && selectedCountries[orig] === true) {
-            if (withinEdges)
-                selectedCountriesWithinEdges[orig]++;
-            return withinEdges;
-        } else if (selectedCountries[orig] === true && selectedCountries[dest] === true) {
-            if (betweenEdges) {
-                selectedCountriesOutgoingEdges[orig]++;
-                selectedCountriesIncomingEdges[dest]++;
-            }
-            return betweenEdges;
-        } else if (selectedCountries[orig] === true) {
-            if (backgroundEdges)
-                selectedCountriesOutgoingEdges[orig]++;
-            return backgroundEdges;
-        } else if (selectedCountries[dest] === true) {
-            if (backgroundEdges)
-                selectedCountriesIncomingEdges[dest]++;
-            return backgroundEdges;
-        } else
-            return false;
-    });*/
-
-    // Filter flight list by selections
+    // Filter flight list by selections and edges
     return flightListMonth.filter(function (d) {
         const origCoords = [d.longitude_1, d.latitude_1];
         const destCoords = [d.longitude_2, d.latitude_2];
@@ -372,90 +345,21 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         return true;
                     }
                 }
-
-
-
-                    // TODO OLD VERSION
-                    /*if (checkCoords(selectionCoords, origCoords)) {
-                        for (let l = 0; l < selectionsCount; l++) {
-                            if (selectedSelections[l] === true) {
-                                selectionCoords = selections[l];
-                                if (checkCoords(selectionCoords, destCoords)) {
-                                    if (betweenEdges) {
-                                        selectionsOutgoingEdges[i]++;
-                                        selectionsIncomingEdges[l]++;
-                                        return true;
-                                    } else
-                                        return false;
-                                }
-                            }
-                        }
-                        selectionsOutgoingEdges[i]++;
-                        return true;
-                    } else if (checkCoords(selectionCoords, destCoords)) {
-                        for (let m = 0; m < selectionsCount; m++) {
-                            if (selectedSelections[m] === true) {
-                                selectionCoords = selections[m];
-                                if (checkCoords(selectionCoords, origCoords)) {
-                                    if (betweenEdges) {
-                                        selectionsOutgoingEdges[m]++;
-                                        selectionsIncomingEdges[i]++;
-                                        return true;
-                                    } else
-                                        return false;
-                                }
-                            }
-                        }
-                        selectionsIncomingEdges[i]++;
-                        return true;
-                    }*/
-
-
-
-
-
-
                 if (betweenEdges && !backgroundEdges) {
                     for (let k = 0; k < selectionsCount; k++) {
                         if (selectedSelections[k] === true) {
                             selectionCoords2 = selections[k]
-                                if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
-                                    selectionsOutgoingEdges[i]++;
-                                    selectionsIncomingEdges[k]++;
-                                    return true;
-                                } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
-                                    selectionsOutgoingEdges[k]++;
-                                    selectionsIncomingEdges[i]++;
-                                    return true;
-                                }
+                            if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
+                                selectionsOutgoingEdges[i]++;
+                                selectionsIncomingEdges[k]++;
+                                return true;
+                            } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
+                                selectionsOutgoingEdges[k]++;
+                                selectionsIncomingEdges[i]++;
+                                return true;
+                            }
                         }
                     }
-
-
-                    // TODO OLD VERSION
-                    /*if (checkCoords(selectionCoords, origCoords)) {
-                        for (let j = 0; j < selectionsCount; j++) {
-                            if (selectedSelections[j] === true) {
-                                selectionCoords = selections[j];
-                                if (j !== i && checkCoords(selectionCoords, destCoords)) {
-                                    selectionsOutgoingEdges[i]++;
-                                    selectionsIncomingEdges[j]++;
-                                    return true;
-                                }
-                            }
-                        }
-                    } else if (checkCoords(selectionCoords, destCoords)) {
-                        for (let k = 0; k < selectionsCount; k++) {
-                            if (selectedSelections[k] === true) {
-                                selectionCoords = selections[k];
-                                if (k !== i && checkCoords(selectionCoords, origCoords)) {
-                                    selectionsOutgoingEdges[k]++;
-                                    selectionsIncomingEdges[i]++;
-                                    return true;
-                                }
-                            }
-                        }
-                    }*/
                 }
             }
         }
