@@ -32,10 +32,10 @@ var selectionCoords = [];
 var selectionCoordsStart = [];
 var selectionCoordsEnd = [];
 
-var selectedSelections = [false,false,false,false,false,false,false,false,false,false];
-var selectionsWithinEdges = [0,0,0,0,0,0,0,0,0,0];
-var selectionsOutgoingEdges = [0,0,0,0,0,0,0,0,0,0];
-var selectionsIncomingEdges = [0,0,0,0,0,0,0,0,0,0];
+var selectedSelections = [false,false,false,false,false];
+var selectionsWithinEdges = [0,0,0,0,0];
+var selectionsOutgoingEdges = [0,0,0,0,0];
+var selectionsIncomingEdges = [0,0,0,0,0];
 
 var selectionsColors = [
     "#d33135",
@@ -48,6 +48,7 @@ var selectionsColors = [
     "#b4e931",
     "#d60e92",
     "#671d00"]
+var selectionColor;
 
 var maxSelection = 5;
 var selectionsCount = 0;
@@ -143,6 +144,7 @@ function loadWorldMap() {
             .on("mousemove", mousemove)
             .on("click", function (event) {
                 if (drawSelectionsMode) {
+
                     drawSelection(event);
                 }
             });
@@ -231,10 +233,27 @@ function mousemove(event) {
     mouseCoords = d3.pointer(event);
     selectionRect.attr("width", Math.max(0, mouseCoords[0] - 0.5 - +selectionRect.attr("x")))
         .attr("height", Math.max(0, mouseCoords[1] - 0.5 - +selectionRect.attr("y")))
-        .attr("stroke", selectionsColors[selectionsCount])
+        .attr("stroke", function (){
+            if (selectionColor !== -1)
+                return selectionsColors[selectionColor];
+        })
         .attr("stroke-width", 0.75)
         .attr("fill", "none")
         .attr("pointer-events", "none");
+}
+
+/**
+ * Find the first free selection slot
+ * @returns {number}
+ */
+function findFirstFreeSelectionsSlot(){
+    for (let i = 0; i < selectedSelections.length; i++) {
+        if (selectedSelections[i] === false) {
+            selectedSelections[i] = true;
+            return i;
+        }
+    }
+    return -1;
 }
 
 /**
@@ -246,7 +265,6 @@ function drawSelection(event) {
         return;
 
     mouseCoords = d3.pointer(event);
-
     if (startSelection) {
         selectionRect = svgMap.append("rect")
             .attr("x", mouseCoords[0])
@@ -254,19 +272,25 @@ function drawSelection(event) {
             .attr("height", 0)
             .attr("width", 0);
 
+        selectionColor = findFirstFreeSelectionsSlot();
         selectionCoordsStart = projection.invert([mouseCoords[0], mouseCoords[1]]);
         startSelection = false;
     } else {
         selectionsCount++;
         selectionRect
-            .attr("id", "selection" + selectionsCount + "R")                                // TODO wenn man löscht und neu zeichnet, ist index falsch
+            .attr("id", function () {
+                if (selectionColor !== -1)
+                    return "selection" + selectionColor + "R";})
             .attr("width", Math.max(0, mouseCoords[0] - +selectionRect.attr("x")))
             .attr("height", Math.max(0, mouseCoords[1] - +selectionRect.attr("y")));
 
         d3.select("#selections")
             .append("p")
-            .attr("id", "selection" + selectionsCount + "P")
-            .text("Selection " + selectionsCount)
+            .attr("id", function (){
+                if (selectionColor !== -1)
+                    return "selection" + selectionColor + "P";
+            })
+            .text("Selection " + selectionColor)
             .on("mouseover", function () {
                 let sel = d3.select(this).attr("id");
                 sel = "#" + sel.substring(0, sel.length-1) + "R";
@@ -274,34 +298,35 @@ function drawSelection(event) {
             })
             .on("mouseout", function () {
                 let sel = d3.select(this).attr("id");
-                let nr = sel.substring(9, sel.length-1) - 1;
+                let nr = sel.substring(9, sel.length-1);
                 sel = "#" + sel.substring(0, sel.length-1) + "R";
                 d3.select(sel).attr('stroke', selectionsColors[nr]);
             })
             .append("input")
             .attr("type", "button")
             .attr("class", "button")
-            .attr("id", "selection" + selectionsCount)
+            .attr("id", "selection" + selectionColor)
             .attr("value", "Delete Selection")
             .on("click", function () {
                 const id = d3.select(this).attr("id");
                 const selectionNr = id.substring(id.length-1,id.length)-1;
                 d3.select("#" + id + "P").remove();
                 d3.select("#" + id + "R").remove();
-                selectedSelections[selectionNr] = false;
+                selectedSelections[selectionNr+1] = false;
+                selectionsCount--;
                 console.log(selectedSelections);
                 displayData(false, selectionNr);
             });
 
         selectionCoordsEnd = projection.invert([mouseCoords[0], mouseCoords[1]]);
         selectionCoords = [selectionCoordsStart, selectionCoordsEnd];
-        selections[selectionsCount-1] = selectionCoords;
+        selections[selectionColor-1] = selectionCoords;
 
-        selectedSelections[selectionsCount-1] = true;
+        selectedSelections[selectionColor] = true;
         console.log(selectedSelections);
 
         startSelection = true;
-        displayData(true, selectionsCount);
+        displayData(true, selectionColor);
     }
 }
 
