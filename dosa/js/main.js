@@ -53,12 +53,14 @@ var selectionColor;
 var maxSelection = 5;
 var selectionsCount = 0;
 
+var refreshed;
+
 /**
  * At startup of the program, initializes the map, views and data
  */
 function init() {
     initFilters();
-    loadData(1901);
+    loadData(1900);
     loadWorldMap();
     initMapZoom();
 }
@@ -182,7 +184,8 @@ function loadAirports() {
  * @param month the monthly data to be loaded into the visualization
  */
 function loadDataForMonth(month) {
-    loadData(month);        // TODO check for correct month input
+    loadData(month);      // TODO check for correct month input
+    refreshed = true;
 }
 
 /**
@@ -199,6 +202,11 @@ function loadData(month) {
     }).then(function () {
         console.log('Loaded data for ' + month + ': ' + flightListMonth.length + ' flights found!')
         updateHighLevelInfo();
+
+        if (refreshed) {
+            displayData();
+            refreshed = false;
+        }
     });
 }
 
@@ -427,7 +435,7 @@ function checkCoords(selectionCoords, origCoords, destCoords){
     } else
         return false;
 
-    if (origCoords != null && destCoords != null && selectionCoordStart != null && selectionCoordEnd != null) {
+    if (origCoords != null && destCoords != null && selCoordsStart != null && selCoordsEnd != null) {
         return origCoords[0] >= selCoordsStart[0] && origCoords[0] < selCoordsEnd[0] &&
             origCoords[1] <= selCoordsStart[1] && origCoords[1] > selCoordsEnd[1] &&
             destCoords[0] >= selCoordsStart[0] && destCoords[0] < selCoordsEnd[0] &&
@@ -484,7 +492,7 @@ function displayData(highLevelInfo, id) {
         //.attr('opacity', 0.2)                 // TODO causes performance problems...?!
         .attr('pointer-events', 'none');
 
-    if (id !== -1)
+    if (id !== null && id !== -1)
         highLevelInfo ? createHighLevelInfo(id) : removeHighLevelInfo(id);
     updateHighLevelInfo();
 
@@ -496,6 +504,8 @@ function displayData(highLevelInfo, id) {
  * Updates all high level info entries
  */
 function updateHighLevelInfo() {
+
+    console.log("refreshing data.. " + selectionsWithinEdges)
     d3.select('#highlevelview')
         .selectAll('p')
         .each(function () {

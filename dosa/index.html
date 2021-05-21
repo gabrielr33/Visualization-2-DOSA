@@ -26,12 +26,12 @@
 
 <div class="view-filter">
     <h2>Filter View</h2>
-    <label>
-        <input type="text" id="monthInput" value="1901">
-    </label>
-    <button type="button" id="loadMonthButton" onclick="loadDataForMonth(document.getElementById('monthInput').value)">
-        Select month
-    </button>
+
+    <span id="monthText">00-2019</span>
+
+    <div class="slidecontainer">
+        <input type="range" min="1900" max="1912" value="1900" class="slider" id="monthinputslider" oninput="document.getElementById('monthText').innerHTML = this.value.substring(2,4) + - + 20 + this.value.substring(0,2)" onchange="loadDataForMonth(this.value)">
+    </div>
 
     <div>
         <p>
