@@ -184,6 +184,7 @@ function loadAirports() {
  * @param month the monthly data to be loaded into the visualization
  */
 function loadDataForMonth(month) {
+    d3.select('#loadingtext').text('refreshing data...');
     loadData(month);      // TODO check for correct month input
     refreshed = true;
 }
@@ -206,6 +207,7 @@ function loadData(month) {
         if (refreshed) {
             displayData();
             refreshed = false;
+            d3.select('#loadingtext').text('');
         }
     });
 }

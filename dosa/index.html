@@ -1,79 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <title>Vis2 DOSA</title>
 
-    <link rel="stylesheet" type="text/css" href="style/style.css">
+    <link rel='stylesheet' type='text/css' href='style/style.css'>
 
-    <script src="lib/d3/d3.js"></script>
-    <script src="lib/d3-queue/d3-queue.js"></script>
-    <script src="lib/topojson/topojson.js"></script>
-    <script src="js/main.js"></script>
+    <script src='lib/d3/d3.js'></script>
+    <script src='lib/d3-queue/d3-queue.js'></script>
+    <script src='lib/topojson/topojson.js'></script>
+    <script src='js/main.js'></script>
 </head>
 
-<body onload="init()">
+<body onload='init()'>
 
 <h1>Vis2 DOSA</h1>
 
-<p id="credits">
-    Created by Martin Crepaz and Gabriel Ratschiller in the course "Visualisierung 2" of the masters "Visual Computing" at the TU Wien.<br>
-    Implementation based on the paper "Multivariate Network Exploration and Presentation: From Detail to Overview via Selections and Aggregations" - Van den Elzen, S., & Van Wijk, J. J. (2014)
+<p id='credits'>
+    Created by Martin Crepaz and Gabriel Ratschiller in the course 'Visualisierung 2' of the masters 'Visual Computing' at the TU Wien.<br>
+    Implementation based on the paper 'Multivariate Network Exploration and Presentation: From Detail to Overview via Selections and Aggregations' - Van den Elzen, S., & Van Wijk, J. J. (2014)
 </p>
 
 <hr>
 
-<div class="view-filter">
+<div class='view-filter'>
     <h2>Filter View</h2>
 
-    <span id="monthText">00-2019</span>
+    <span id='monthtext'>00-2019</span>
 
-    <div class="slidecontainer">
-        <input type="range" min="1900" max="1912" value="1900" class="slider" id="monthinputslider" oninput="document.getElementById('monthText').innerHTML = this.value.substring(2,4) + - + 20 + this.value.substring(0,2)" onchange="loadDataForMonth(this.value)">
+    <div class='slidecontainer'>
+        <input type='range' min='1900' max='1912' value='1900' class='slider' id='monthinputslider' oninput='document.getElementById("monthtext").innerHTML = this.value.substring(2,4) + - + 20 + this.value.substring(0,2)' onchange='loadDataForMonth(this.value)'>
+        <span id='loadingtext'></span>
     </div>
 
     <div>
         <p>
-            <input type="checkbox" id="withinEdges">
-            <label for="withinEdges">Within edges</label>
-            <input type="checkbox" id="betweenEdges">
-            <label for="betweenEdges">Between edges</label>
-            <input type="checkbox" id="backgroundEdges">
-            <label for="backgroundEdges">Background edges</label>
+            <input type='checkbox' id='withinEdges'>
+            <label for='withinEdges'>Within edges</label>
+            <input type='checkbox' id='betweenEdges'>
+            <label for='betweenEdges'>Between edges</label>
+            <input type='checkbox' id='backgroundEdges'>
+            <label for='backgroundEdges'>Background edges</label>
         </p>
     </div>
 </div>
 
-<div class="view-container">
-    <div class="view-detail">
-        <div class="view-container">
-            <div class="view-map">
+<div class='view-container'>
+    <div class='view-detail'>
+        <div class='view-container'>
+            <div class='view-map'>
                 <h2>Detail View</h2>
 
-                <input type="checkbox" id="drawselections">
-                <label for="withinEdges">Draw selections</label>
+                <input type='checkbox' id='drawselections'>
+                <label for='withinEdges'>Draw selections</label>
 
-                <div id="map"></div>
+                <div id='map'></div>
 
-                <div id="countryname">
+                <div id='countryname'>
                     <text>null</text>
                 </div>
 
-                <div id="countedges">
+                <div id='countedges'>
                     <text>null</text>
                 </div>
             </div>
-            <div class="view-selections">
+            <div class='view-selections'>
                 <br><br><br><br>
-                <div id="selections"></div>
+                <div id='selections'></div>
             </div>
         </div>
     </div>
 
-    <div class="view-high-level">
+    <div class='view-high-level'>
         <h2>High-Level View</h2>
-        <div id="highlevelview"></div>
+        <div id='highlevelview'></div>
     </div>
 </div>
 </body>
