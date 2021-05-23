@@ -42,7 +42,8 @@ var selectionsColors = [
     '#4986B2',
     '#5AAB56',
     '#E88628',
-    '#964F9D' /*,
+    '#964F9D',
+    '#FFFFFF' /*,
     '#22E0E0',
     '#FFD500',
     '#B4E931',
@@ -53,9 +54,13 @@ var selectionsColorsNames = [
     'Blue',
     'Green',
     'Orange',
-    'Violet'
+    'Violet',
+    'White'
 ]
 var selectionColor;
+
+var edgeStartColor = '#FFE900';
+var edgeEndColor = '#FFE900';
 
 var maxSelection = 5;
 var selectionsCount = 0;
@@ -183,6 +188,8 @@ function loadAirports() {
             })
             .attr('fill', '#FFFFFF')
             .attr('pointer-events', 'none');
+
+        createGradientsForSelections();
     });
 }
 
@@ -366,6 +373,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                 if (checkCoords(selectionCoords, origCoords, destCoords)) {
                     if (withinEdges) {
                         selectionsWithinEdges[i]++;
+                        d.edgeStartColor = selectionsColorsNames[i];
+                        d.edgeEndColor = selectionsColorsNames[i];
                         return true;
                     } else
                         return false;
@@ -379,6 +388,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                     if (betweenEdges) {
                                         selectionsOutgoingEdges[i]++;
                                         selectionsIncomingEdges[l]++;
+                                        d.edgeStartColor = selectionsColorsNames[i];
+                                        d.edgeEndColor = selectionsColorsNames[l];
                                         return true;
                                     } else
                                         return false;
@@ -386,6 +397,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                             }
                         }
                         selectionsOutgoingEdges[i]++;
+                        d.edgeStartColor = selectionsColorsNames[i];
+                        d.edgeEndColor = 'White';
                         return true;
                     } else if (checkCoords(selectionCoords, destCoords)) {
                         for (let m = 0; m < maxSelection; m++) {
@@ -395,6 +408,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                     if (betweenEdges) {
                                         selectionsOutgoingEdges[m]++;
                                         selectionsIncomingEdges[i]++;
+                                        d.edgeStartColor = selectionsColorsNames[i];
+                                        d.edgeEndColor = selectionsColorsNames[m];
                                         return true;
                                     } else
                                         return false;
@@ -402,6 +417,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                             }
                         }
                         selectionsIncomingEdges[i]++;
+                        d.edgeStartColor = 'White';
+                        d.edgeEndColor = selectionsColorsNames[i];
                         return true;
                     }
                 }
@@ -412,10 +429,14 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                             if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
                                 selectionsOutgoingEdges[i]++;
                                 selectionsIncomingEdges[k]++;
+                                d.edgeStartColor = selectionsColorsNames[i];
+                                d.edgeEndColor = selectionsColorsNames[k];
                                 return true;
                             } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
                                 selectionsOutgoingEdges[k]++;
                                 selectionsIncomingEdges[i]++;
+                                d.edgeStartColor = selectionsColorsNames[k];
+                                d.edgeEndColor = selectionsColorsNames[i];
                                 return true;
                             }
                         }
@@ -463,6 +484,50 @@ function checkCoords(selectionCoords, origCoords, destCoords){
 }
 
 /**
+ *
+ */
+function createGradientsForSelections(){
+    // Create the gradients
+    for (let i = 0; i < maxSelection+1; i++) {
+        for (let j = 0; j < maxSelection+1; j++) {
+            let defs = svgMap.append("defs");
+            let gradient = defs.append("linearGradient")
+                .attr("id", "svgGradient" + selectionsColorsNames[i] + selectionsColorsNames[j])
+                .attr("gradientUnits", "userSpaceOnUse");
+
+            gradient.append("stop")
+                .attr('class', 'start')
+                .attr("offset", "0%")
+                .attr("stop-color", selectionsColors[i])
+                .attr("stop-opacity", 1);
+
+            gradient.append("stop")
+                .attr('class', 'end')
+                .attr("offset", "100%")
+                .attr("stop-color", selectionsColors[j])
+                .attr("stop-opacity", 1);
+
+            let defs2 = svgMap.append("defs2");
+            let gradient2 = defs2.append("linearGradient2")
+                .attr("id", "svgGradient" + selectionsColorsNames[j] + selectionsColorsNames[i])
+                .attr("gradientUnits", "userSpaceOnUse");
+
+            gradient2.append("stop")
+                .attr('class', 'start')
+                .attr("offset", "0%")
+                .attr("stop-color", selectionsColors[j])
+                .attr("stop-opacity", 1);
+
+            gradient2.append("stop")
+                .attr('class', 'end')
+                .attr("offset", "100%")
+                .attr("stop-color", selectionsColors[i])
+                .attr("stop-opacity", 1);
+        }
+    }
+}
+
+/**
  * Draws the edges on the map according to the selected countries
  * @param highLevelInfo specifies if the high level info has to be created or removed
  * @param id the id of the selection to be created or deleted
@@ -492,7 +557,16 @@ function displayData(highLevelInfo, id) {
             const coordsEnd = projection([d.longitude_2, d.latitude_2]);
             return coordsEnd[1];
         })
-        .attr('stroke', '#FFE900')
+        .attr('stroke', function (d) {
+            d3.select('#svgGradient' + d.edgeStartColor + d.edgeEndColor)
+                .attr("x1", projection([d.longitude_1, d.latitude_1])[0])
+                .attr("x2", projection([d.longitude_1, d.latitude_1])[1])
+                .attr("y1", projection([d.longitude_2, d.latitude_2])[0])
+                .attr("y2", projection([d.longitude_2, d.latitude_2])[1]);
+
+            console.log(d.edgeStartColor + d.edgeEndColor)
+            return 'url(#svgGradient' + d.edgeStartColor + d.edgeEndColor + ')';
+        })
         //.attr('stroke-width', Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
         .attr('stroke-width', function () {
             amountEdges++;
@@ -513,8 +587,6 @@ function displayData(highLevelInfo, id) {
  * Updates all high level info entries
  */
 function updateHighLevelInfo() {
-
-    console.log("refreshing data.. " + selectionsWithinEdges)
     d3.select('#highlevelview')
         .selectAll('p')
         .each(function () {
