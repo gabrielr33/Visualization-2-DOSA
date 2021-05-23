@@ -1,5 +1,5 @@
 /**
- * Author: Gabriel Ratschiller & Martin Crepaz
+ * Authors: Gabriel Ratschiller & Martin Crepaz
  * Date: 03.04.2021
  */
 
@@ -42,12 +42,19 @@ var selectionsColors = [
     '#4986B2',
     '#5AAB56',
     '#E88628',
-    '#964F9D',
+    '#964F9D' /*,
     '#22E0E0',
     '#FFD500',
     '#B4E931',
     '#D60E92',
-    '#671D00']
+    '#671D00'*/]
+var selectionsColorsNames = [
+    'Red',
+    'Blue',
+    'Green',
+    'Orange',
+    'Violet'
+]
 var selectionColor;
 
 var maxSelection = 5;
@@ -299,7 +306,7 @@ function drawSelection(event) {
                 if (selectionColor !== -1)
                     return 'selection' + selectionColor + 'P';
             })
-            .text('Selection ' + selectionColor)
+            .text('Selection ' + selectionsColorsNames[selectionColor])
             .on('mouseover', function () {
                 let sel = d3.select(this).attr('id');
                 sel = '#' + sel.substring(0, sel.length-1) + 'R';
@@ -315,7 +322,7 @@ function drawSelection(event) {
             .attr('type', 'button')
             .attr('class', 'button')
             .attr('id', 'selection' + selectionColor)
-            .attr('value', 'Delete Selection')
+            .attr('value', 'Delete Selection ' + selectionsColorsNames[selectionColor])
             .on('click', function () {
                 const id = d3.select(this).attr('id');
                 const selectionNr = parseInt(id.substring(id.length-1,id.length));
@@ -514,7 +521,7 @@ function updateHighLevelInfo() {
             let id = d3.select(this).attr('id');
             id = id.substring(id.length-1,id.length)-1;
             d3.select(this)
-                .text('Selection ' + id +
+                .text('Selection ' + selectionsColorsNames[id] +
                     '; Within: ' + selectionsWithinEdges[id] +
                     '; Outgoing: ' + selectionsOutgoingEdges[id] +
                     '; Incoming: ' + selectionsIncomingEdges[id]);
@@ -542,7 +549,7 @@ function resetEdgeCounters() {
  * @param idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
-    let text = 'Selection ' + idToCreate +
+    let text = 'Selection ' + selectionsColorsNames[idToCreate-1] +
         '; Within: ' + selectionsWithinEdges[idToCreate] +
         '; Outgoing: ' + selectionsOutgoingEdges[idToCreate] +
         '; Incoming: ' + selectionsIncomingEdges[idToCreate];
