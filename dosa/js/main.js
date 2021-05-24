@@ -67,6 +67,8 @@ var selectionsCount = 0;
 
 var refreshed;
 
+var highLevelGraph;
+
 /**
  * At startup of the program, initializes the map, views and data
  */
@@ -75,6 +77,7 @@ function init() {
     loadData(1900);
     loadWorldMap();
     initMapZoom();
+    initHighLevelGraph();
 }
 
 /**
@@ -621,14 +624,29 @@ function resetEdgeCounters() {
  * @param idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
-    let text = 'Selection ' + selectionsColorsNames[idToCreate-1] +
+    let id = idToCreate - 1;
+    /*let text = 'Selection ' + selectionsColorsNames[id] +
         '; Within: ' + selectionsWithinEdges[idToCreate] +
         '; Outgoing: ' + selectionsOutgoingEdges[idToCreate] +
         '; Incoming: ' + selectionsIncomingEdges[idToCreate];
     d3.select('#highlevelview')
         .append('p')
         .attr('id', 'highlevel' + idToCreate)
-        .text(text);
+        .text(text);*/
+
+    // Add a node to the high level graph
+    highLevelGraph.add({
+        data: {id: 'Selection' + id},
+        style: {
+            width: 100,
+            height: 100,
+            'color': selectionsColors[id],
+            'border-color': selectionsColors[id]
+        }
+    });
+    highLevelGraph.layout({
+        name: 'circle'
+    }).run();
 }
 
 /**
@@ -636,5 +654,156 @@ function createHighLevelInfo(idToCreate) {
  * @param idToDelete the id of the selection to be deleted
  */
 function removeHighLevelInfo(idToDelete) {
-    d3.select('#highlevel' + idToDelete).remove()
+    //d3.select('#highlevel' + idToDelete).remove()
+    highLevelGraph.remove(
+        highLevelGraph.$('#Selection' + (idToDelete-1))
+    );
+    highLevelGraph.layout({
+        name: 'circle'
+    }).run();
+}
+
+/**
+ * Initializes the high level view graph
+ */
+function initHighLevelGraph(){
+    highLevelGraph = cytoscape({
+        container: document.getElementById('cy'),
+        style: [
+            {
+                selector: 'node',
+                style: {
+                    shape: 'rectangle',
+                    "text-valign": "center",
+                    "text-halign": "center",
+                    'font-size': 20,
+                    'border-width': 3,
+                    'background-color': '#394037',
+                    'label': 'data(id)'
+                }
+            },
+
+            {
+                selector: 'edge',
+                style: {
+                    'curve-style': 'bezier',
+                    'target-arrow-shape': 'triangle',
+                    'line-fill': 'linear-gradient',
+                    'line-gradient-stop-positions': ['0%', '80%']
+                }
+            }
+        ]
+    });
+    //sampleDataHighLevelGraph();
+}
+
+function sampleDataHighLevelGraph() {
+    // Add sample nodes
+    for (let i = 0; i < 5; i++) {
+        highLevelGraph.add({
+            data: {id: 'Selection' + i},
+            style: {
+                width: 100,
+                height: 100,
+                'color': selectionsColors[i],
+                'border-color': selectionsColors[i]
+            }
+        });
+    }
+
+    // Add sample edges
+    highLevelGraph.add({
+        data: {
+            id: 'edge10',
+            source: 'Selection2',
+            target: 'Selection4'
+        },
+        style: {
+            width: 8,
+            'target-arrow-color': selectionsColors[4],
+            'line-gradient-stop-colors': [selectionsColors[2], selectionsColors[4]]
+        }
+    });
+
+    highLevelGraph.add({
+        data: {
+            id: 'edge11',
+            source: 'Selection0',
+            target: 'Selection4'
+        },
+        style: {
+            width: 15,
+            'target-arrow-color': selectionsColors[4],
+            'line-gradient-stop-colors': [selectionsColors[0], selectionsColors[4]]
+        }
+    });
+
+    highLevelGraph.add({
+        data: {
+            id: 'edge14',
+            source: 'Selection4',
+            target: 'Selection1'
+        },
+        style: {
+            width: 5,
+            'target-arrow-color': selectionsColors[1],
+            'line-gradient-stop-colors': [selectionsColors[4], selectionsColors[1]]
+        }
+    });
+
+    highLevelGraph.add({
+        data: {
+            id: 'edge16',
+            source: 'Selection1',
+            target: 'Selection0'
+        },
+        style: {
+            width: 18,
+            'target-arrow-color': selectionsColors[0],
+            'line-gradient-stop-colors': [selectionsColors[1], selectionsColors[0]]
+        }
+    });
+
+    highLevelGraph.add({
+        data: {
+            id: 'edge19',
+            source: 'Selection0',
+            target: 'Selection1'
+        },
+        style: {
+            width: 8,
+            'target-arrow-color': selectionsColors[1],
+            'line-gradient-stop-colors': [selectionsColors[0], selectionsColors[1]]
+        }
+    });
+
+    highLevelGraph.add({
+        data: {
+            id: 'edge20',
+            source: 'Selection2',
+            target: 'Selection3'
+        },
+        style: {
+            width: 8,
+            'target-arrow-color': selectionsColors[3],
+            'line-gradient-stop-colors': [selectionsColors[2], selectionsColors[3]]
+        }
+    });
+
+    highLevelGraph.add({
+        data: {
+            id: 'edge21',
+            source: 'Selection2',
+            target: 'Selection2'
+        },
+        style: {
+            width: 8,
+            'target-arrow-color': selectionsColors[2],
+            'line-gradient-stop-colors': [selectionsColors[2], selectionsColors[2]]
+        }
+    });
+
+    highLevelGraph.layout({
+        name: 'circle'
+    }).run();
 }
