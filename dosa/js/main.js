@@ -320,13 +320,22 @@ function drawSelection(event) {
             .on('mouseover', function () {
                 let sel = d3.select(this).attr('id');
                 sel = '#' + sel.substring(0, sel.length-1) + 'R';
+                // Detail view map rect
                 d3.select(sel).attr('stroke', '#FFFFFF');
+                // High level graph node
+                const selectionNr = parseInt(sel.substring(sel.length-2,sel.length-1));
+                highLevelGraph.$('#Selection' + selectionNr).css('border-color', '#FFFFFF');
+                highLevelGraph.$('#Selection' + selectionNr).css('color', '#FFFFFF');
             })
             .on('mouseout', function () {
                 let sel = d3.select(this).attr('id');
                 let nr = sel.substring(9, sel.length-1);
                 sel = '#' + sel.substring(0, sel.length-1) + 'R';
+                // Detail view map rect
                 d3.select(sel).attr('stroke', selectionsColors[nr]);
+                // High level graph node
+                highLevelGraph.$('#Selection' + nr).css('border-color', selectionsColors[nr]);
+                highLevelGraph.$('#Selection' + nr).css('color', selectionsColors[nr]);
             })
             .append('input')
             .attr('type', 'button')
