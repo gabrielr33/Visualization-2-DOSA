@@ -36,6 +36,7 @@ var selectedSelections = [false,false,false,false,false];
 var selectionsWithinEdges = [0,0,0,0,0];
 var selectionsOutgoingEdges = [0,0,0,0,0];
 var selectionsIncomingEdges = [0,0,0,0,0];
+var selectionsEdgeCounts = [];
 
 var selectionsColors = [
     '#D33135',
@@ -73,6 +74,7 @@ var highLevelGraph;
  * At startup of the program, initializes the map, views and data
  */
 function init() {
+    initSelectionsEdgeCounts();
     initFilters();
     loadData(1900);
     loadWorldMap();
@@ -219,7 +221,7 @@ function loadData(month) {
             flightListMonth.push(loadedRow);
     }).then(function () {
         console.log('Loaded data for ' + month + ': ' + flightListMonth.length + ' flights found!')
-        updateHighLevelInfo();
+        //updateHighLevelInfo();
 
         if (refreshed) {
             displayData();
@@ -384,7 +386,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
 
                 if (checkCoords(selectionCoords, origCoords, destCoords)) {
                     if (withinEdges) {
-                        selectionsWithinEdges[i]++;
+                        selectionsEdgeCounts[i][i]++;
                         d.edgeStartColor = selectionsColorsNames[i];
                         d.edgeEndColor = selectionsColorsNames[i];
                         return true;
@@ -398,8 +400,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 selectionCoords2 = selections[l];
                                 if (checkCoords(selectionCoords2, destCoords)) {
                                     if (betweenEdges) {
-                                        selectionsOutgoingEdges[i]++;
-                                        selectionsIncomingEdges[l]++;
+                                        selectionsEdgeCounts[i][i]++;
                                         d.edgeStartColor = selectionsColorsNames[i];
                                         d.edgeEndColor = selectionsColorsNames[l];
                                         return true;
@@ -408,7 +409,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 }
                             }
                         }
-                        selectionsOutgoingEdges[i]++;
+                        selectionsOutgoingEdges[i]++;       // TODO background edges
                         d.edgeStartColor = selectionsColorsNames[i];
                         d.edgeEndColor = 'White';
                         return true;
@@ -418,8 +419,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 selectionCoords2 = selections[m];
                                 if (checkCoords(selectionCoords2, origCoords)) {
                                     if (betweenEdges) {
-                                        selectionsOutgoingEdges[m]++;
-                                        selectionsIncomingEdges[i]++;
+                                        selectionsEdgeCounts[m][i]++;
                                         d.edgeStartColor = selectionsColorsNames[i];
                                         d.edgeEndColor = selectionsColorsNames[m];
                                         return true;
@@ -428,7 +428,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 }
                             }
                         }
-                        selectionsIncomingEdges[i]++;
+                        selectionsIncomingEdges[i]++;       // TODO background edges
                         d.edgeStartColor = 'White';
                         d.edgeEndColor = selectionsColorsNames[i];
                         return true;
@@ -439,14 +439,12 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         if (selectedSelections[k] === true) {
                             selectionCoords2 = selections[k]
                             if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
-                                selectionsOutgoingEdges[i]++;
-                                selectionsIncomingEdges[k]++;
+                                selectionsEdgeCounts[i][k]++;
                                 d.edgeStartColor = selectionsColorsNames[i];
                                 d.edgeEndColor = selectionsColorsNames[k];
                                 return true;
                             } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
-                                selectionsOutgoingEdges[k]++;
-                                selectionsIncomingEdges[i]++;
+                                selectionsEdgeCounts[k][i]++;
                                 d.edgeStartColor = selectionsColorsNames[k];
                                 d.edgeEndColor = selectionsColorsNames[i];
                                 return true;
@@ -576,7 +574,6 @@ function displayData(highLevelInfo, id) {
                 .attr("y1", projection([d.longitude_2, d.latitude_2])[0])
                 .attr("y2", projection([d.longitude_2, d.latitude_2])[1]);
 
-            console.log(d.edgeStartColor + d.edgeEndColor)
             return 'url(#svgGradient' + d.edgeStartColor + d.edgeEndColor + ')';
         })
         //.attr('stroke-width', Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
@@ -599,7 +596,7 @@ function displayData(highLevelInfo, id) {
  * Updates all high level info entries
  */
 function updateHighLevelInfo() {
-    d3.select('#highlevelview')
+    /*d3.select('#highlevelview')
         .selectAll('p')
         .each(function () {
             let id = d3.select(this).attr('id');
@@ -609,7 +606,45 @@ function updateHighLevelInfo() {
                     '; Within: ' + selectionsWithinEdges[id] +
                     '; Outgoing: ' + selectionsOutgoingEdges[id] +
                     '; Incoming: ' + selectionsIncomingEdges[id]);
-        });
+        });*/
+    deleteAllHighLevelEdges();
+
+    for (let i = 0; i < maxSelection; i++) {
+        for (let j = 0; j < maxSelection; j++) {
+            if (selectionsEdgeCounts[i][j] > 0 && highLevelGraph.$('#Selection' + i).length !== 0 && highLevelGraph.$('#Selection' + j).length !== 0 && highLevelGraph.$('#edge' + i + j).length === 0) {
+                highLevelGraph.add({
+                    data: {
+                        id: 'edge' + i + j,
+                        source: 'Selection' + i,
+                        target: 'Selection' + j
+                    },
+                    style: {
+                        width: 8,   // TODO calculate width
+                        'target-arrow-color': selectionsColors[j],
+                        'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
+                    }
+                });
+            }
+        }
+    }
+
+    console.log(selectionsEdgeCounts);
+}
+
+/**
+ * Deletes all high level graph edges
+ */
+function deleteAllHighLevelEdges() {
+    for (let i = 0; i < maxSelection; i++) {
+        for (let j = 0; j < maxSelection; j++) {
+            if (highLevelGraph.$('#edge' + i + j).length === 0)
+                continue;
+
+            highLevelGraph.remove(
+                highLevelGraph.$('#edge' + i + j)
+            );
+        }
+    }
 }
 
 /**
@@ -617,7 +652,12 @@ function updateHighLevelInfo() {
  */
 function resetEdgeCounters() {
     amountEdges = 0;
-    Object.keys(selectionsWithinEdges).forEach(function (key) {
+    for (let i = 0; i < maxSelection; i++) {
+        for (let j = 0; j < maxSelection; j++) {
+            selectionsEdgeCounts[i][j] = 0;
+        }
+    }
+    /*Object.keys(selectionsWithinEdges).forEach(function (key) {
         selectionsWithinEdges[key] = 0;
     });
     Object.keys(selectionsOutgoingEdges).forEach(function (key) {
@@ -625,7 +665,7 @@ function resetEdgeCounters() {
     });
     Object.keys(selectionsIncomingEdges).forEach(function (key) {
         selectionsIncomingEdges[key] = 0;
-    });
+    });*/
 }
 
 /**
@@ -653,6 +693,20 @@ function createHighLevelInfo(idToCreate) {
             'border-color': selectionsColors[id]
         }
     });
+
+    /*let popper1 = highLevelGraph.nodes()[0].popper({
+        content: () => {
+            let div = document.createElement('div');
+
+            div.innerHTML = 'Popper content';
+
+            document.body.appendChild(div);
+
+            return div;
+        },
+        popper: {} // my popper options here
+    });*/
+
     highLevelGraph.layout({
         name: 'circle'
     }).run();
@@ -670,6 +724,16 @@ function removeHighLevelInfo(idToDelete) {
     highLevelGraph.layout({
         name: 'circle'
     }).run();
+}
+
+/**
+ * Initializes the edge count array with default values
+ */
+function initSelectionsEdgeCounts() {
+    // Fill the edge count array
+    for (let i = 0; i < maxSelection; i++) {
+        selectionsEdgeCounts.push([0, 0, 0, 0, 0]);
+    }
 }
 
 /**
@@ -707,19 +771,6 @@ function initHighLevelGraph(){
 }
 
 function sampleDataHighLevelGraph() {
-    // Add sample nodes
-    for (let i = 0; i < 5; i++) {
-        highLevelGraph.add({
-            data: {id: 'Selection' + i},
-            style: {
-                width: 100,
-                height: 100,
-                'color': selectionsColors[i],
-                'border-color': selectionsColors[i]
-            }
-        });
-    }
-
     // Add sample edges
     highLevelGraph.add({
         data: {

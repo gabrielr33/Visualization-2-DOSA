@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Vis2 project 2021",
   "main": "index.html",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,8 +12,10 @@
   "license": "MIT",
   "dependencies": {
     "@angular/cli": "^11.2.11",
+    "@popperjs/core": "^2.9.2",
     "angular": "^1.8.2",
     "cytoscape": "^3.19.0",
+    "cytoscape-popper": "^2.0.0",
     "d3": "^6.7.0",
     "d3-queue": "^3.0.7",
     "d3-selection": "^2.0.0",
