@@ -437,7 +437,7 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                 if (betweenEdges && !backgroundEdges) {
                     for (let k = 0; k < maxSelection; k++) {
                         if (selectedSelections[k] === true) {
-                            selectionCoords2 = selections[k]
+                            selectionCoords2 = selections[k];
                             if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
                                 selectionsEdgeCounts[i][k]++;
                                 d.edgeStartColor = selectionsColorsNames[i];
@@ -498,8 +498,8 @@ function checkCoords(selectionCoords, origCoords, destCoords){
  */
 function createGradientsForSelections(){
     // Create the gradients
-    for (let i = 0; i < maxSelection+1; i++) {
-        for (let j = 0; j < maxSelection+1; j++) {
+    for (let i = 0; i < maxSelection; i++) {
+        for (let j = 0; j < maxSelection; j++) {
             let defs = svgMap.append("defs");
             let gradient = defs.append("linearGradient")
                 .attr("id", "svgGradient" + selectionsColorsNames[i] + selectionsColorsNames[j])
@@ -570,8 +570,8 @@ function displayData(highLevelInfo, id) {
         .attr('stroke', function (d) {
             d3.select('#svgGradient' + d.edgeStartColor + d.edgeEndColor)
                 .attr("x1", projection([d.longitude_1, d.latitude_1])[0])
-                .attr("x2", projection([d.longitude_1, d.latitude_1])[1])
-                .attr("y1", projection([d.longitude_2, d.latitude_2])[0])
+                .attr("y1", projection([d.longitude_1, d.latitude_1])[1])
+                .attr("x2", projection([d.longitude_2, d.latitude_2])[0])
                 .attr("y2", projection([d.longitude_2, d.latitude_2])[1]);
 
             return 'url(#svgGradient' + d.edgeStartColor + d.edgeEndColor + ')';
@@ -620,6 +620,11 @@ function updateHighLevelInfo() {
                     },
                     style: {
                         width: 8,   // TODO calculate width
+                        //'source-label': 'test',
+                        'source-text-offset': '100px',
+                        'text-rotation': 'autorotate',
+                        'color': '#FFFFFF',
+                        'font-size': 20,
                         'target-arrow-color': selectionsColors[j],
                         'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
                     }
@@ -759,6 +764,7 @@ function initHighLevelGraph(){
             {
                 selector: 'edge',
                 style: {
+                    'overlay-color': '#FFFFFF',
                     'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
                     'line-fill': 'linear-gradient',
