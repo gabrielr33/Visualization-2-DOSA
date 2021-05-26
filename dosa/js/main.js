@@ -367,6 +367,16 @@ function drawSelection(event) {
     }
 }
 
+function deleteAllSelections() {
+    for (let i = 0; i < maxSelection; i++) {
+        d3.select('#selection' + i + 'P').remove();
+        d3.select('#selection' + i + 'R').remove();
+        selectedSelections[i] = false;
+        selectionsCount--;
+        displayData(false, i + 1);
+    }
+}
+
 /**
  * Filters the data based on the selected filters
  * @param withinEdges if true, then show the within edges of the selected country
@@ -498,8 +508,8 @@ function checkCoords(selectionCoords, origCoords, destCoords){
  */
 function createGradientsForSelections(){
     // Create the gradients
-    for (let i = 0; i < maxSelection; i++) {
-        for (let j = 0; j < maxSelection; j++) {
+    for (let i = 0; i < maxSelection+1; i++) {
+        for (let j = 0; j < maxSelection+1; j++) {
             let defs = svgMap.append("defs");
             let gradient = defs.append("linearGradient")
                 .attr("id", "svgGradient" + selectionsColorsNames[i] + selectionsColorsNames[j])
