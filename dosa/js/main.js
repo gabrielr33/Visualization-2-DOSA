@@ -8,6 +8,9 @@ var monthMin = 1901;    // = 2019/01
 var monthMax = 2103;    // = 2021/03
 var selectedMonth;
 
+var firstSeenTime;
+var lastSeenTime;       // TODO add filter for day times
+
 var flightListMonth = [];
 var airportList = [];
 
@@ -622,23 +625,26 @@ function updateHighLevelInfo() {
     for (let i = 0; i < maxSelection; i++) {
         for (let j = 0; j < maxSelection; j++) {
             if (selectionsEdgeCounts[i][j] > 0 && highLevelGraph.$('#Selection' + i).length !== 0 && highLevelGraph.$('#Selection' + j).length !== 0 && highLevelGraph.$('#edge' + i + j).length === 0) {
-                highLevelGraph.add({
-                    data: {
-                        id: 'edge' + i + j,
-                        source: 'Selection' + i,
-                        target: 'Selection' + j
-                    },
-                    style: {
-                        width: 8,   // TODO calculate width
-                        //'source-label': 'test',
-                        'source-text-offset': '100px',
-                        'text-rotation': 'autorotate',
-                        'color': '#FFFFFF',
-                        'font-size': 20,
-                        'target-arrow-color': selectionsColors[j],
-                        'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
-                    }
-                });
+                    highLevelGraph.add({
+                        data: {
+                            id: 'edge' + i + j,
+                            source: 'Selection' + i,
+                            target: 'Selection' + j
+                        },
+                        style: {
+                            width: 8,   // TODO calculate width
+                            //'source-label': 'test',
+                            'control-point-step-size': '80px',
+                            'loop-direction': '0deg',
+                            'loop-sweep': '-45deg',
+                            'source-text-offset': '100px',
+                            'text-rotation': 'autorotate',
+                            'color': '#FFFFFF',
+                            'font-size': 20,
+                            'target-arrow-color': selectionsColors[j],
+                            'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
+                        }
+                    });
             }
         }
     }
@@ -786,7 +792,7 @@ function initHighLevelGraph(){
     //sampleDataHighLevelGraph();
 }
 
-function sampleDataHighLevelGraph() {
+/*function sampleDataHighLevelGraph() {
     // Add sample edges
     highLevelGraph.add({
         data: {
@@ -882,4 +888,4 @@ function sampleDataHighLevelGraph() {
     highLevelGraph.layout({
         name: 'circle'
     }).run();
-}
+}*/
