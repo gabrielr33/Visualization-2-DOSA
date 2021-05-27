@@ -594,7 +594,7 @@ function displayData(highLevelInfo, id) {
             amountEdges++;
             return 0.1;
         })
-        //.attr('opacity', 0.2)                 // TODO causes performance problems...?!
+        //.attr('opacity', 0.8)                 // TODO causes performance problems...?!
         .attr('pointer-events', 'none');
 
     if (id !== null && id !== -1)
@@ -629,18 +629,18 @@ function updateHighLevelInfo() {
                         data: {
                             id: 'edge' + i + j,
                             source: 'Selection' + i,
-                            target: 'Selection' + j
+                            target: 'Selection' + j,
+                            label: selectionsEdgeCounts[i][j]
                         },
                         style: {
                             width: 8,   // TODO calculate width
-                            //'source-label': 'test',
+                            //'source-label': selectionsEdgeCounts[i][j],
+                            'font-size': 30,
                             'control-point-step-size': '80px',
                             'loop-direction': '0deg',
                             'loop-sweep': '-45deg',
                             'source-text-offset': '100px',
-                            'text-rotation': 'autorotate',
                             'color': '#FFFFFF',
-                            'font-size': 20,
                             'target-arrow-color': selectionsColors[j],
                             'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
                         }
@@ -784,10 +784,30 @@ function initHighLevelGraph(){
                     'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
                     'line-fill': 'linear-gradient',
-                    'line-gradient-stop-positions': ['0%', '80%']
+                    'line-gradient-stop-positions': ['0%', '80%'],
+                }
+            },
+
+            {
+                selector: '.edgeLabel',
+                css: {
+                    'label': (ele) => {
+                        if (ele.isEdge()) return ele.data('label');
+                    }
                 }
             }
-        ]
+        ],
+        wheelSensitivity: 0.4
+    });
+
+    // Hovering edges displays edge count
+    highLevelGraph.on('mouseover', 'edge', function(e) {
+        e.target.toggleClass('edge');
+        e.target.toggleClass('edgeLabel');
+    });
+    highLevelGraph.on('mouseout', 'edge', function(e) {
+        e.target.toggleClass('edgeLabel');
+        e.target.toggleClass('edge');
     });
     //sampleDataHighLevelGraph();
 }
