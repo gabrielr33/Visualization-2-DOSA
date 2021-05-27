@@ -37,8 +37,8 @@ var selectionCoordsEnd = [];
 
 var selectedSelections = [false,false,false,false,false];
 var selectionsWithinEdges = [0,0,0,0,0];
-var selectionsOutgoingEdges = [0,0,0,0,0];
-var selectionsIncomingEdges = [0,0,0,0,0];
+var selectionsOutgoingEdges = [0,0,0,0,0,0,0,0,0,0];
+var selectionsIncomingEdges = [0,0,0,0,0,0,0,0,0,0];
 var selectionsEdgeCounts = [];
 
 var selectionsColors = [
@@ -413,19 +413,23 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 selectionCoords2 = selections[l];
                                 if (checkCoords(selectionCoords2, destCoords)) {
                                     if (betweenEdges) {
-                                        selectionsEdgeCounts[i][i]++;
+                                        selectionsEdgeCounts[i][l]++;
                                         d.edgeStartColor = selectionsColorsNames[i];
                                         d.edgeEndColor = selectionsColorsNames[l];
                                         return true;
-                                    } else
+                                    } else {
+                                        console.log("background false")
                                         return false;
+                                    }
                                 }
                             }
                         }
-                        selectionsOutgoingEdges[i]++;       // TODO background edges
+                        selectionsEdgeCounts[i][i + maxSelection]++;
                         d.edgeStartColor = selectionsColorsNames[i];
                         d.edgeEndColor = 'White';
                         return true;
+                        //selectionsOutgoingEdges[i]++;       // TODO background edges
+
                     } else if (checkCoords(selectionCoords, destCoords)) {
                         for (let m = 0; m < maxSelection; m++) {
                             if (selectedSelections[m] === true) {
@@ -433,18 +437,21 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 if (checkCoords(selectionCoords2, origCoords)) {
                                     if (betweenEdges) {
                                         selectionsEdgeCounts[m][i]++;
-                                        d.edgeStartColor = selectionsColorsNames[i];
-                                        d.edgeEndColor = selectionsColorsNames[m];
+                                        d.edgeStartColor = selectionsColorsNames[m];
+                                        d.edgeEndColor = selectionsColorsNames[i];
                                         return true;
-                                    } else
+                                    } else {
+                                        console.log("background false")
                                         return false;
+                                    }
                                 }
                             }
                         }
-                        selectionsIncomingEdges[i]++;       // TODO background edges
+                        selectionsEdgeCounts[i + maxSelection][i]++;
                         d.edgeStartColor = 'White';
                         d.edgeEndColor = selectionsColorsNames[i];
                         return true;
+                        //selectionsIncomingEdges[i]++;       // TODO background edges
                     }
                 }
                 if (betweenEdges && !backgroundEdges) {
@@ -621,9 +628,12 @@ function updateHighLevelInfo() {
         });*/
     deleteAllHighLevelEdges();
 
-    for (let i = 0; i < maxSelection; i++) {
-        for (let j = 0; j < maxSelection; j++) {
-            if (selectionsEdgeCounts[i][j] > 0 && highLevelGraph.$('#Selection' + i).length !== 0 && highLevelGraph.$('#Selection' + j).length !== 0 && highLevelGraph.$('#edge' + i + j).length === 0) {
+    for (let i = 0; i < maxSelection*2; i++) {
+        for (let j = 0; j < maxSelection*2; j++) {
+            if (selectionsEdgeCounts[i][j] > 0 &&
+                highLevelGraph.$('#Selection' + i).length !== 0 &&
+                highLevelGraph.$('#Selection' + j).length !== 0 &&
+                highLevelGraph.$('#edge' + i + j).length === 0) {
                     highLevelGraph.add({
                         data: {
                             id: 'edge' + i + j,
@@ -644,6 +654,46 @@ function updateHighLevelInfo() {
                             'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
                         }
                     });
+            } else if (j >= maxSelection && selectionsEdgeCounts[i][j] > 0 && (highLevelGraph.$('#Selection' + i).length !== 0 && highLevelGraph.$('#Selection' + i + 'B').length !== 0) && highLevelGraph.$('#edge' + i + j).length === 0) {
+                highLevelGraph.add({
+                    data: {
+                        id: 'edge' + i + j,
+                        source: 'Selection' + i,
+                        target: 'Selection' + i + 'B',
+                        label: selectionsEdgeCounts[i][j]
+                    },
+                    style: {
+                        width: 8,   // TODO calculate width
+                        'font-size': 30,
+                        'control-point-step-size': '80px',
+                        'loop-direction': '0deg',
+                        'loop-sweep': '-45deg',
+                        'source-text-offset': '100px',
+                        'color': '#FFFFFF',
+                        'target-arrow-color': selectionsColors[5],
+                        'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[5]]
+                    }
+                });
+            } else if (i >= maxSelection && selectionsEdgeCounts[i][j] > 0 && (highLevelGraph.$('#Selection' + j).length !== 0 && highLevelGraph.$('#Selection' + j + 'B').length !== 0) && highLevelGraph.$('#edge' + i + j).length === 0) {
+                highLevelGraph.add({
+                    data: {
+                        id: 'edge' + i + j,
+                        source: 'Selection' + j + 'B',
+                        target: 'Selection' + j,
+                        label: selectionsEdgeCounts[i][j]
+                    },
+                    style: {
+                        width: 8,   // TODO calculate width
+                        'font-size': 30,
+                        'control-point-step-size': '80px',
+                        'loop-direction': '0deg',
+                        'loop-sweep': '-45deg',
+                        'source-text-offset': '100px',
+                        'color': '#FFFFFF',
+                        'target-arrow-color': selectionsColors[j],
+                        'line-gradient-stop-colors': [selectionsColors[5], selectionsColors[j]]
+                    }
+                });
             }
         }
     }
@@ -705,6 +755,16 @@ function createHighLevelInfo(idToCreate) {
         }
     });
 
+    highLevelGraph.add({
+        data: {id: 'Selection' + id + 'B'},
+        style: {
+            width: 50,
+            height: 50,
+            'color': selectionsColors[5],
+            'border-color': selectionsColors[5]
+        }
+    });
+
     highLevelGraph.layout({
         name: 'circle'
     }).run();
@@ -729,8 +789,8 @@ function removeHighLevelInfo(idToDelete) {
  */
 function initSelectionsEdgeCounts() {
     // Fill the edge count array
-    for (let i = 0; i < maxSelection; i++) {
-        selectionsEdgeCounts.push([0, 0, 0, 0, 0]);
+    for (let i = 0; i < maxSelection*2; i++) {
+        selectionsEdgeCounts.push([0,0,0,0,0,0,0,0,0,0]);
     }
 }
 
