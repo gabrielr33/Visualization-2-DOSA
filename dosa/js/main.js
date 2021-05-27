@@ -594,7 +594,6 @@ function displayData(highLevelInfo, id) {
             amountEdges++;
             return 0.1;
         })
-        //.attr('opacity', 0.8)                 // TODO causes performance problems...?!
         .attr('pointer-events', 'none');
 
     if (id !== null && id !== -1)
@@ -678,15 +677,6 @@ function resetEdgeCounters() {
             selectionsEdgeCounts[i][j] = 0;
         }
     }
-    /*Object.keys(selectionsWithinEdges).forEach(function (key) {
-        selectionsWithinEdges[key] = 0;
-    });
-    Object.keys(selectionsOutgoingEdges).forEach(function (key) {
-        selectionsOutgoingEdges[key] = 0;
-    });
-    Object.keys(selectionsIncomingEdges).forEach(function (key) {
-        selectionsIncomingEdges[key] = 0;
-    });*/
 }
 
 /**
@@ -714,19 +704,6 @@ function createHighLevelInfo(idToCreate) {
             'border-color': selectionsColors[id]
         }
     });
-
-    /*let popper1 = highLevelGraph.nodes()[0].popper({
-        content: () => {
-            let div = document.createElement('div');
-
-            div.innerHTML = 'Popper content';
-
-            document.body.appendChild(div);
-
-            return div;
-        },
-        popper: {} // my popper options here
-    });*/
 
     highLevelGraph.layout({
         name: 'circle'
@@ -809,103 +786,4 @@ function initHighLevelGraph(){
         e.target.toggleClass('edgeLabel');
         e.target.toggleClass('edge');
     });
-    //sampleDataHighLevelGraph();
 }
-
-/*function sampleDataHighLevelGraph() {
-    // Add sample edges
-    highLevelGraph.add({
-        data: {
-            id: 'edge10',
-            source: 'Selection2',
-            target: 'Selection4'
-        },
-        style: {
-            width: 8,
-            'target-arrow-color': selectionsColors[4],
-            'line-gradient-stop-colors': [selectionsColors[2], selectionsColors[4]]
-        }
-    });
-
-    highLevelGraph.add({
-        data: {
-            id: 'edge11',
-            source: 'Selection0',
-            target: 'Selection4'
-        },
-        style: {
-            width: 15,
-            'target-arrow-color': selectionsColors[4],
-            'line-gradient-stop-colors': [selectionsColors[0], selectionsColors[4]]
-        }
-    });
-
-    highLevelGraph.add({
-        data: {
-            id: 'edge14',
-            source: 'Selection4',
-            target: 'Selection1'
-        },
-        style: {
-            width: 5,
-            'target-arrow-color': selectionsColors[1],
-            'line-gradient-stop-colors': [selectionsColors[4], selectionsColors[1]]
-        }
-    });
-
-    highLevelGraph.add({
-        data: {
-            id: 'edge16',
-            source: 'Selection1',
-            target: 'Selection0'
-        },
-        style: {
-            width: 18,
-            'target-arrow-color': selectionsColors[0],
-            'line-gradient-stop-colors': [selectionsColors[1], selectionsColors[0]]
-        }
-    });
-
-    highLevelGraph.add({
-        data: {
-            id: 'edge19',
-            source: 'Selection0',
-            target: 'Selection1'
-        },
-        style: {
-            width: 8,
-            'target-arrow-color': selectionsColors[1],
-            'line-gradient-stop-colors': [selectionsColors[0], selectionsColors[1]]
-        }
-    });
-
-    highLevelGraph.add({
-        data: {
-            id: 'edge20',
-            source: 'Selection2',
-            target: 'Selection3'
-        },
-        style: {
-            width: 8,
-            'target-arrow-color': selectionsColors[3],
-            'line-gradient-stop-colors': [selectionsColors[2], selectionsColors[3]]
-        }
-    });
-
-    highLevelGraph.add({
-        data: {
-            id: 'edge21',
-            source: 'Selection2',
-            target: 'Selection2'
-        },
-        style: {
-            width: 8,
-            'target-arrow-color': selectionsColors[2],
-            'line-gradient-stop-colors': [selectionsColors[2], selectionsColors[2]]
-        }
-    });
-
-    highLevelGraph.layout({
-        name: 'circle'
-    }).run();
-}*/
