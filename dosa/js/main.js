@@ -47,12 +47,7 @@ var selectionsColors = [
     '#5AAB56',
     '#E88628',
     '#964F9D',
-    '#FFFFFF' /*,
-    '#22E0E0',
-    '#FFD500',
-    '#B4E931',
-    '#D60E92',
-    '#671D00'*/]
+    '#FFFFFF']
 var selectionsColorsNames = [
     'Red',
     'Blue',
@@ -63,15 +58,13 @@ var selectionsColorsNames = [
 ]
 var selectionColor;
 
-var edgeStartColor = '#FFE900';
-var edgeEndColor = '#FFE900';
-
 var maxSelection = 5;
 var selectionsCount = 0;
 
 var refreshed;
 
 var highLevelGraph;
+var showAllEdgeCounts = false;
 
 /**
  * At startup of the program, initializes the map, views and data
@@ -93,6 +86,7 @@ function initFilters() {
     d3.select('#betweenEdges').on('change', updatedEdgeFilters);
     d3.select('#backgroundEdges').on('change', updatedEdgeFilters);
     d3.select('#drawselections').on('change', updatedSelectionMode);
+    d3.select('#edgecountsshowall').on('change', updatedEdgeCountMode);
 }
 
 /**
@@ -110,6 +104,16 @@ function updatedEdgeFilters() {
  */
 function updatedSelectionMode(){
     drawSelectionsMode = d3.select('#drawselections').property('checked');
+}
+
+/**
+ * If the edge count mode has been changed
+ */
+function updatedEdgeCountMode() {
+    showAllEdgeCounts = !showAllEdgeCounts;
+    // Toggle edge count displaying on and off
+    highLevelGraph.elements().toggleClass('edge');
+    highLevelGraph.elements().toggleClass('edgeLabel');
 }
 
 /**
@@ -207,7 +211,7 @@ function loadAirports() {
  */
 function loadDataForMonth(month) {
     d3.select('#loadingtext').text('refreshing data...');
-    loadData(month);      // TODO check for correct month input
+    loadData(month);
     refreshed = true;
 }
 
@@ -418,7 +422,6 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                         d.edgeEndColor = selectionsColorsNames[l];
                                         return true;
                                     } else {
-                                        console.log("background false")
                                         return false;
                                     }
                                 }
@@ -428,8 +431,6 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         d.edgeStartColor = selectionsColorsNames[i];
                         d.edgeEndColor = 'White';
                         return true;
-                        //selectionsOutgoingEdges[i]++;       // TODO background edges
-
                     } else if (checkCoords(selectionCoords, destCoords)) {
                         for (let m = 0; m < maxSelection; m++) {
                             if (selectedSelections[m] === true) {
@@ -441,7 +442,6 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                         d.edgeEndColor = selectionsColorsNames[i];
                                         return true;
                                     } else {
-                                        console.log("background false")
                                         return false;
                                     }
                                 }
@@ -451,7 +451,6 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         d.edgeStartColor = 'White';
                         d.edgeEndColor = selectionsColorsNames[i];
                         return true;
-                        //selectionsIncomingEdges[i]++;       // TODO background edges
                     }
                 }
                 if (betweenEdges && !backgroundEdges) {
@@ -596,7 +595,6 @@ function displayData(highLevelInfo, id) {
 
             return 'url(#svgGradient' + d.edgeStartColor + d.edgeEndColor + ')';
         })
-        //.attr('stroke-width', Math.min(0.02 + (100 / amountLines), 0.5))    // TODO Problem bei mehreren Ländern werden alle edges dünner, auch zB von Ukraine
         .attr('stroke-width', function () {
             amountEdges++;
             return 0.1;
@@ -628,85 +626,63 @@ function updateHighLevelInfo() {
         });*/
     deleteAllHighLevelEdges();
 
-    for (let i = 0; i < maxSelection*2; i++) {
-        for (let j = 0; j < maxSelection*2; j++) {
+    for (let i = 0; i < maxSelection * 2; i++) {
+        for (let j = 0; j < maxSelection * 2; j++) {
             if (selectionsEdgeCounts[i][j] > 0 &&
                 highLevelGraph.$('#Selection' + i).length !== 0 &&
                 highLevelGraph.$('#Selection' + j).length !== 0 &&
                 highLevelGraph.$('#edge' + i + j).length === 0) {
-                    highLevelGraph.add({
-                        data: {
-                            id: 'edge' + i + j,
-                            source: 'Selection' + i,
-                            target: 'Selection' + j,
-                            label: selectionsEdgeCounts[i][j]
-                        },
-                        style: {
-                            width: 8,   // TODO calculate width
-                            //'source-label': selectionsEdgeCounts[i][j],
-                            'font-size': 30,
-                            'control-point-step-size': '80px',
-                            'loop-direction': '0deg',
-                            'loop-sweep': '-45deg',
-                            'source-text-offset': '100px',
-                            'color': '#FFFFFF',
-                            'target-arrow-color': selectionsColors[j],
-                            'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[j]]
-                        }
-                    });
-            } else if (j >= maxSelection && selectionsEdgeCounts[i][j] > 0 && (highLevelGraph.$('#Selection' + i).length !== 0 && highLevelGraph.$('#Selection' + i + 'B').length !== 0) && highLevelGraph.$('#edge' + i + j).length === 0) {
-                highLevelGraph.add({
-                    data: {
-                        id: 'edge' + i + j,
-                        source: 'Selection' + i,
-                        target: 'Selection' + i + 'B',
-                        label: selectionsEdgeCounts[i][j]
-                    },
-                    style: {
-                        width: 8,   // TODO calculate width
-                        'font-size': 30,
-                        'control-point-step-size': '80px',
-                        'loop-direction': '0deg',
-                        'loop-sweep': '-45deg',
-                        'source-text-offset': '100px',
-                        'color': '#FFFFFF',
-                        'target-arrow-color': selectionsColors[5],
-                        'line-gradient-stop-colors': [selectionsColors[i], selectionsColors[5]]
-                    }
-                });
-            } else if (i >= maxSelection && selectionsEdgeCounts[i][j] > 0 && (highLevelGraph.$('#Selection' + j).length !== 0 && highLevelGraph.$('#Selection' + j + 'B').length !== 0) && highLevelGraph.$('#edge' + i + j).length === 0) {
-                highLevelGraph.add({
-                    data: {
-                        id: 'edge' + i + j,
-                        source: 'Selection' + j + 'B',
-                        target: 'Selection' + j,
-                        label: selectionsEdgeCounts[i][j]
-                    },
-                    style: {
-                        width: 8,   // TODO calculate width
-                        'font-size': 30,
-                        'control-point-step-size': '80px',
-                        'loop-direction': '0deg',
-                        'loop-sweep': '-45deg',
-                        'source-text-offset': '100px',
-                        'color': '#FFFFFF',
-                        'target-arrow-color': selectionsColors[j],
-                        'line-gradient-stop-colors': [selectionsColors[5], selectionsColors[j]]
-                    }
-                });
+                addEdgeInHighLevelGraph(i, j, i, j, j, i, j);
+            } else if (selectionsEdgeCounts[i][j] > 0 && highLevelGraph.$('#edge' + i + j).length === 0) {
+                if (j >= maxSelection && (highLevelGraph.$('#Selection' + i).length !== 0 && highLevelGraph.$('#Selection' + i + 'B').length !== 0)) {
+                    addEdgeInHighLevelGraph(i, j, i, i + 'B', 5, i, 5);
+                } else if (i >= maxSelection && (highLevelGraph.$('#Selection' + j).length !== 0 && highLevelGraph.$('#Selection' + j + 'B').length !== 0)) {
+                    addEdgeInHighLevelGraph(i, j, j + 'B', j, j, 5, j);
+                }
             }
         }
     }
-
     console.log(selectionsEdgeCounts);
+}
+
+/**
+ * Adds an edge in the high level graph
+ * @param i
+ * @param j
+ * @param name1
+ * @param name2
+ * @param arrowColor
+ * @param stopColor1
+ * @param stopColor2
+ */
+function addEdgeInHighLevelGraph(i, j, name1, name2, arrowColor, stopColor1, stopColor2) {
+    highLevelGraph.add({
+        data: {
+            id: 'edge' + i + j,
+            source: 'Selection' + name1,
+            target: 'Selection' + name2,
+            label: selectionsEdgeCounts[i][j]
+        },
+        style: {
+            width: 8,   // TODO calculate width
+            'font-size': 30,
+            'control-point-step-size': '80px',
+            'loop-direction': '0deg',
+            'loop-sweep': '-45deg',
+            'source-text-offset': '100px',
+            'color': '#FFFFFF',
+            'target-arrow-color': selectionsColors[arrowColor],
+            'line-gradient-stop-colors': [selectionsColors[stopColor1], selectionsColors[stopColor2]]
+        }
+    });
 }
 
 /**
  * Deletes all high level graph edges
  */
 function deleteAllHighLevelEdges() {
-    for (let i = 0; i < maxSelection; i++) {
-        for (let j = 0; j < maxSelection; j++) {
+    for (let i = 0; i < maxSelection*2; i++) {
+        for (let j = 0; j < maxSelection*2; j++) {
             if (highLevelGraph.$('#edge' + i + j).length === 0)
                 continue;
 
@@ -717,20 +693,35 @@ function deleteAllHighLevelEdges() {
     }
 }
 
+/*function deleteAllHighLevelBackgroundNodes() {
+    if (backgroundEdgesOld && !backgroundEdges) {
+        console.log('fsf')
+        for (let i = 0; i < maxSelection; i++) {
+            if (highLevelGraph.$('#Selection' + i + 'B').length === 0)
+                continue;
+
+            highLevelGraph.remove(
+                highLevelGraph.$('#Selection' + i + 'B')
+            );
+        }
+        backgroundEdgesOld = backgroundEdges;
+    }
+}*/
+
 /**
  * Resets all the edge counter objects
  */
 function resetEdgeCounters() {
     amountEdges = 0;
-    for (let i = 0; i < maxSelection; i++) {
-        for (let j = 0; j < maxSelection; j++) {
+    for (let i = 0; i < maxSelection*2; i++) {
+        for (let j = 0; j < maxSelection*2; j++) {
             selectionsEdgeCounts[i][j] = 0;
         }
     }
 }
 
 /**
- * Creates a high level entry in the high level view
+ * Creates a node with its background node in the high level graph
  * @param idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
@@ -758,10 +749,12 @@ function createHighLevelInfo(idToCreate) {
     highLevelGraph.add({
         data: {id: 'Selection' + id + 'B'},
         style: {
-            width: 50,
-            height: 50,
-            'color': selectionsColors[5],
-            'border-color': selectionsColors[5]
+            width: 7,
+            height: 7,
+            'color': null,
+            'border-color': null,
+            'background-color': null,
+            'label': '.'
         }
     });
 
@@ -778,6 +771,9 @@ function removeHighLevelInfo(idToDelete) {
     //d3.select('#highlevel' + idToDelete).remove()
     highLevelGraph.remove(
         highLevelGraph.$('#Selection' + (idToDelete-1))
+    );
+    highLevelGraph.remove(
+        highLevelGraph.$('#Selection' + (idToDelete-1) + 'B')
     );
     highLevelGraph.layout({
         name: 'circle'
@@ -797,7 +793,7 @@ function initSelectionsEdgeCounts() {
 /**
  * Initializes the high level view graph
  */
-function initHighLevelGraph(){
+function initHighLevelGraph() {
     highLevelGraph = cytoscape({
         container: document.getElementById('cy'),
         style: [
@@ -838,12 +834,16 @@ function initHighLevelGraph(){
     });
 
     // Hovering edges displays edge count
-    highLevelGraph.on('mouseover', 'edge', function(e) {
-        e.target.toggleClass('edge');
-        e.target.toggleClass('edgeLabel');
+    highLevelGraph.on('mouseover', 'edge', function (e) {
+        if (!showAllEdgeCounts) {
+            e.target.toggleClass('edge');
+            e.target.toggleClass('edgeLabel');
+        }
     });
-    highLevelGraph.on('mouseout', 'edge', function(e) {
-        e.target.toggleClass('edgeLabel');
-        e.target.toggleClass('edge');
+    highLevelGraph.on('mouseout', 'edge', function (e) {
+        if (!showAllEdgeCounts) {
+            e.target.toggleClass('edgeLabel');
+            e.target.toggleClass('edge');
+        }
     });
 }
