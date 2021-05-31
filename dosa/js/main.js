@@ -3,6 +3,13 @@
  * Date: 03.04.2021
  */
 
+// TODO ----- TODO
+// - dataset filter
+// - fix sea selection problem
+// - bend edges
+// - UI prettier
+// TODO ----- TODO
+
 // Variables
 var monthMin = 1901;    // = 2019/01
 var monthMax = 2103;    // = 2021/03
