@@ -111,9 +111,8 @@ function updatedSelectionMode(){
  * If the edge count mode has been changed
  */
 function updatedEdgeCountMode() {
-    showAllEdgeCounts = !showAllEdgeCounts;
+    showAllEdgeCounts = d3.select('#edgecountsshowall').property('checked');
     // Toggle edge count displaying on and off
-    highLevelGraph.edges().toggleClass('edge');
     highLevelGraph.edges().toggleClass('edgeLabel');
 }
 
@@ -681,6 +680,11 @@ function addEdgeInHighLevelGraph(i, j, name1, name2, arrowColor, stopColor1, sto
             'line-gradient-stop-colors': [selectionsColors[stopColor1], selectionsColors[stopColor2]]
         }
     });
+
+    if (showAllEdgeCounts)
+        highLevelGraph.$('#edge' + i + j).toggleClass('edgeLabel');
+    else
+        highLevelGraph.$('#edge' + i + j).toggleClass('edge');
 }
 
 /**
