@@ -4,10 +4,9 @@
  */
 
 // TODO ----- TODO
-// - dataset filter
+// - Martin: make UI scrollable / fit in one window -> UI prettier
+// - Gabriel: dataset filter
 // - fix sea selection problem
-// - bend edges
-// - UI prettier
 // TODO ----- TODO
 
 // Variables
@@ -48,6 +47,8 @@ var selectionsOutgoingEdges = [0,0,0,0,0,0,0,0,0,0];
 var selectionsIncomingEdges = [0,0,0,0,0,0,0,0,0,0];
 var selectionsEdgeCounts = [];
 var selectionsNodeCounts = [0,0,0,0,0];
+
+var divisor;
 
 var selectionsColors = [
     '#D33135',
@@ -236,7 +237,7 @@ function loadData(month) {
     }).then(function () {
         console.log('Loaded data for ' + month + ': ' + flightListMonth.length + ' flights found!')
         //updateHighLevelInfo();
-
+        divisor = Math.floor(flightListMonth.length/20000);
         if (refreshed) {
             displayData();
             refreshed = false;
@@ -428,6 +429,9 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                 if (checkCoords(selectionCoords, origCoords, destCoords)) {
                     if (withinEdges) {
                         selectionsEdgeCounts[i][i]++;
+                        amountEdges++;
+                        if (d.id % divisor !== 0)
+                            return false;
                         d.edgeStartColor = selectionsColorsNames[i];
                         d.edgeEndColor = selectionsColorsNames[i];
                         return true;
@@ -442,6 +446,9 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 if (checkCoords(selectionCoords2, destCoords)) {
                                     if (betweenEdges) {
                                         selectionsEdgeCounts[i][l]++;
+                                        amountEdges++;
+                                        if (d.id % divisor !== 0)
+                                            return false;
                                         d.edgeStartColor = selectionsColorsNames[i];
                                         d.edgeEndColor = selectionsColorsNames[l];
                                         return true;
@@ -452,6 +459,9 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                             }
                         }
                         selectionsEdgeCounts[i][i + maxSelection]++;
+                        amountEdges++;
+                        if (d.id % divisor !== 0)
+                            return false;
                         d.edgeStartColor = selectionsColorsNames[i];
                         d.edgeEndColor = 'White';
                         return true;
@@ -462,6 +472,9 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 if (checkCoords(selectionCoords2, origCoords)) {
                                     if (betweenEdges) {
                                         selectionsEdgeCounts[m][i]++;
+                                        amountEdges++;
+                                        if (d.id % divisor !== 0)
+                                            return false;
                                         d.edgeStartColor = selectionsColorsNames[m];
                                         d.edgeEndColor = selectionsColorsNames[i];
                                         return true;
@@ -472,6 +485,9 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                             }
                         }
                         selectionsEdgeCounts[i + maxSelection][i]++;
+                        amountEdges++;
+                        if (d.id % divisor !== 0)
+                            return false;
                         d.edgeStartColor = 'White';
                         d.edgeEndColor = selectionsColorsNames[i];
                         return true;
@@ -483,11 +499,17 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                             selectionCoords2 = selections[k];
                             if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
                                 selectionsEdgeCounts[i][k]++;
+                                amountEdges++;
+                                if (d.id % divisor !== 0)
+                                    return false;
                                 d.edgeStartColor = selectionsColorsNames[i];
                                 d.edgeEndColor = selectionsColorsNames[k];
                                 return true;
                             } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
                                 selectionsEdgeCounts[k][i]++;
+                                amountEdges++;
+                                if (d.id % divisor !== 0)
+                                    return false;
                                 d.edgeStartColor = selectionsColorsNames[k];
                                 d.edgeEndColor = selectionsColorsNames[i];
                                 return true;
@@ -619,10 +641,7 @@ function displayData(highLevelInfo, id) {
 
             return 'url(#svgGradient' + d.edgeStartColor + d.edgeEndColor + ')';
         })
-        .attr('stroke-width', function () {
-            amountEdges++;
-            return 0.1;
-        })
+        .attr('stroke-width', 0.1)
         .attr('pointer-events', 'none');
 
     if (id !== null && id !== -1)
@@ -676,7 +695,7 @@ function addEdgeInHighLevelGraph(i, j, name1, name2, arrowColor, stopColor1, sto
             count: selectionsEdgeCounts[i][j]
         },
         style: {
-            width: (selectionsEdgeCounts[i][j]/amountEdges)*(20*selectionsCount),   // TODO calculate width
+            width: Math.max(3, (selectionsEdgeCounts[i][j]/amountEdges)*(30*selectionsCount)),
             'font-size': 30,
             'control-point-step-size': '80px',
             'loop-direction': '0deg',
