@@ -40,6 +40,7 @@ var selectionsWithinEdges = [0,0,0,0,0];
 var selectionsOutgoingEdges = [0,0,0,0,0,0,0,0,0,0];
 var selectionsIncomingEdges = [0,0,0,0,0,0,0,0,0,0];
 var selectionsEdgeCounts = [];
+var selectionsNodeCounts = [0,0,0,0,0];
 
 var selectionsColors = [
     '#D33135',
@@ -112,8 +113,8 @@ function updatedSelectionMode(){
 function updatedEdgeCountMode() {
     showAllEdgeCounts = !showAllEdgeCounts;
     // Toggle edge count displaying on and off
-    highLevelGraph.elements().toggleClass('edge');
-    highLevelGraph.elements().toggleClass('edgeLabel');
+    highLevelGraph.edges().toggleClass('edge');
+    highLevelGraph.edges().toggleClass('edgeLabel');
 }
 
 /**
@@ -366,6 +367,8 @@ function drawSelection(event) {
         selectionCoords = [selectionCoordsStart, selectionCoordsEnd];
         selections[selectionColor] = selectionCoords;
 
+        countAirportsForSelection(selectionColor);
+
         selectedSelections[selectionColor] = true;
         console.log(selectedSelections);
 
@@ -374,11 +377,26 @@ function drawSelection(event) {
     }
 }
 
+function countAirportsForSelection(id) {
+    let start = selectionCoords[0];
+    let end = selectionCoords[1];
+
+    for (let i = 0; i < airportList.length; i++) {
+        let airportLong = airportList[i].longitude;
+        let airportLat = airportList[i].latitude;
+
+        if (airportLong > start[0] && airportLat < start[1] && airportLong < end[0] && airportLat > end[1]) {
+            selectionsNodeCounts[id]++;
+        }
+    }
+}
+
 function deleteAllSelections() {
     for (let i = 0; i < maxSelection; i++) {
         d3.select('#selection' + i + 'P').remove();
         d3.select('#selection' + i + 'R').remove();
         selectedSelections[i] = false;
+        selectionsNodeCounts[i] = 0;
         selectionsCount--;
         displayData(false, i + 1);
     }
@@ -613,19 +631,7 @@ function displayData(highLevelInfo, id) {
  * Updates all high level info entries
  */
 function updateHighLevelInfo() {
-    /*d3.select('#highlevelview')
-        .selectAll('p')
-        .each(function () {
-            let id = d3.select(this).attr('id');
-            id = id.substring(id.length-1,id.length)-1;
-            d3.select(this)
-                .text('Selection ' + selectionsColorsNames[id] +
-                    '; Within: ' + selectionsWithinEdges[id] +
-                    '; Outgoing: ' + selectionsOutgoingEdges[id] +
-                    '; Incoming: ' + selectionsIncomingEdges[id]);
-        });*/
     deleteAllHighLevelEdges();
-
     for (let i = 0; i < maxSelection * 2; i++) {
         for (let j = 0; j < maxSelection * 2; j++) {
             if (selectionsEdgeCounts[i][j] > 0 &&
@@ -661,10 +667,10 @@ function addEdgeInHighLevelGraph(i, j, name1, name2, arrowColor, stopColor1, sto
             id: 'edge' + i + j,
             source: 'Selection' + name1,
             target: 'Selection' + name2,
-            label: selectionsEdgeCounts[i][j]
+            count: selectionsEdgeCounts[i][j]
         },
         style: {
-            width: 8,   // TODO calculate width
+            width: (selectionsEdgeCounts[i][j]/amountEdges)*(20*selectionsCount),   // TODO calculate width
             'font-size': 30,
             'control-point-step-size': '80px',
             'loop-direction': '0deg',
@@ -726,18 +732,13 @@ function resetEdgeCounters() {
  */
 function createHighLevelInfo(idToCreate) {
     let id = idToCreate - 1;
-    /*let text = 'Selection ' + selectionsColorsNames[id] +
-        '; Within: ' + selectionsWithinEdges[idToCreate] +
-        '; Outgoing: ' + selectionsOutgoingEdges[idToCreate] +
-        '; Incoming: ' + selectionsIncomingEdges[idToCreate];
-    d3.select('#highlevelview')
-        .append('p')
-        .attr('id', 'highlevel' + idToCreate)
-        .text(text);*/
 
     // Add a node to the high level graph
     highLevelGraph.add({
-        data: {id: 'Selection' + id},
+        data: {
+            id: 'Selection' + id,
+            count: selectionsNodeCounts[id]
+        },
         style: {
             width: 100,
             height: 100,
@@ -768,13 +769,13 @@ function createHighLevelInfo(idToCreate) {
  * @param idToDelete the id of the selection to be deleted
  */
 function removeHighLevelInfo(idToDelete) {
-    //d3.select('#highlevel' + idToDelete).remove()
     highLevelGraph.remove(
         highLevelGraph.$('#Selection' + (idToDelete-1))
     );
     highLevelGraph.remove(
         highLevelGraph.$('#Selection' + (idToDelete-1) + 'B')
     );
+    selectionsNodeCounts[idToDelete-1] = 0;
     highLevelGraph.layout({
         name: 'circle'
     }).run();
@@ -809,7 +810,14 @@ function initHighLevelGraph() {
                     'label': 'data(id)'
                 }
             },
-
+            {
+                selector: '.nodeLabel',
+                css: {
+                    'label': (ele) => {
+                        if (ele.isNode()) return ele.data('count');
+                    }
+                }
+            },
             {
                 selector: 'edge',
                 style: {
@@ -820,12 +828,11 @@ function initHighLevelGraph() {
                     'line-gradient-stop-positions': ['0%', '80%'],
                 }
             },
-
             {
                 selector: '.edgeLabel',
                 css: {
                     'label': (ele) => {
-                        if (ele.isEdge()) return ele.data('label');
+                        if (ele.isEdge()) return ele.data('count');
                     }
                 }
             }
@@ -845,5 +852,15 @@ function initHighLevelGraph() {
             e.target.toggleClass('edgeLabel');
             e.target.toggleClass('edge');
         }
+    });
+
+    // Hovering node displays airports count
+    highLevelGraph.on('mouseover', 'node', function (e) {
+        e.target.toggleClass('node');
+        e.target.toggleClass('nodeLabel');
+    });
+    highLevelGraph.on('mouseout', 'node', function (e) {
+        e.target.toggleClass('nodeLabel');
+        e.target.toggleClass('node');
     });
 }
