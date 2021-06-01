@@ -34,5 +34,5 @@ Hovering over the nodes and edges displays the number of flights or airports rel
 
 #### Provided dataset (sample):
 - 'flightlist_201901': January 2019 - 228964 entries
-- 'flightlist_202010': October 2020 - 324985 entries
+- 'flightlist_201910': October 2019 - 324985 entries
 - 'flightlist_202011': November 2020 - 86448 entries
