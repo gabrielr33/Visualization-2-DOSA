@@ -12,30 +12,27 @@ One view for the map and the interaction with the map.
 One view for the high level information based on the selection in the map.
 
 #### Usage:
-**First** select a month. The data for the 1901 (january 2019) month is selected by default. To retrieve the data from different months, the year and the month must be entered in the input field in the format YYMM (“1901” for january 2019).
+**First** select a month using the slider. The data for january 2019 is selected by default.
 
-**Note**: After starting the application, no lines are displayed because no country has been selected yet.
+**Note**: After starting the application, no lines are displayed because no selection on the map has been made yet.
 
-**Second** select what edges have to be displayed in the map.
-Within edges are all edges where both airports are in the same country.
-Between edges are edges between different countries and where both of these countries are selected.
-Background edges are edges where one airport is in a country that is selected and the other not.
+**Second** select which edges should be displayed in the map.
+Within edges are all edges where both airports are in the same selection.
+Between edges are edges between airports that are in different selections.
+Background edges are edges where one airport is in a selection that is selected and the other airport is not.
 
-Next, click on the countries that you want to investigate and whose data you want to display. Red dots show the airports and yellow lines the flight connections.
+Next, draw selections over areas that you want to investigate and whose data you want to display. White dots show the airports and colored lines the flight connections.
 
 #### To interact with the map:
-To select a country click with the left mouse button on it.
-To deselect a country click on the selected country with the left mouse button.
-Zooming with the mouse wheel.
-Dragging the map by holding the left mouse button and dragging the mouse.
+To start drawing a selection, click once with the left mouse button, move the mouse (without holding the mouse down) and click a second time when you want to complete the selection.
+To delete a selection, click on the 'Delete Selection' button in the selections tab.
+Zooming the map as well as the high level graph is possible via the mouse wheel.
+Dragging the map and the high level graph is possible by holding the left mouse button and dragging the mouse.
 
-In the high-level view the selected countries and the related information about the flights is displayed. This information is later used to generate a high-level graph as it is in the paper.
+In the high-level view, the selections with the activated edges are displayed in a high-level graph and the associated information about the flights is displayed.
+Hovering over the nodes and edges displays the number of flights or airports related to the selections made.
 
-#### Provided dataset for the demo:
-- 1901 (January 2019) - 23491 entries
-- 2001 (January 2020) - 133344 entries
-- 2101 (January 2021) - 86091 entries
-
-**Our challenge:**
-
-performance optimization (133000 edges slow down the rendering and interaction of the map)
+#### Provided dataset (sample):
+- 'flightlist_201901': January 2019 - 228964 entries
+- 'flightlist_202010': October 2020 - 324985 entries
+- 'flightlist_202011': November 2020 - 86448 entries
