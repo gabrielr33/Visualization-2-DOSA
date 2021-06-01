@@ -5,7 +5,6 @@
 
 // TODO ----- TODO
 // - Martin: make UI scrollable / fit in one window -> UI prettier
-// - Gabriel: dataset filter
 // - fix sea selection problem
 // TODO ----- TODO
 
