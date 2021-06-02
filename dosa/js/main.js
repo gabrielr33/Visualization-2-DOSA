@@ -13,9 +13,6 @@ var monthMin = 1901;    // = 2019/01
 var monthMax = 2103;    // = 2021/03
 var selectedMonth;
 
-var firstSeenTime;
-var lastSeenTime;       // TODO add filter for day times
-
 var flightListMonth = [];
 var airportList = [];
 
@@ -28,6 +25,8 @@ var amountEdges;
 var withinEdges = false;
 var betweenEdges = false;
 var backgroundEdges = false;
+
+var weekDays = [true,true,true,true,true,true,true];
 
 var drawSelectionsMode = false;
 var startSelection = true;
@@ -90,20 +89,37 @@ function init() {
  * Initializes the filter checkboxes and inputs
  */
 function initFilters() {
-    d3.select('#withinEdges').on('change', updatedEdgeFilters);
-    d3.select('#betweenEdges').on('change', updatedEdgeFilters);
-    d3.select('#backgroundEdges').on('change', updatedEdgeFilters);
+    d3.select('#withinEdges').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#betweenEdges').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#backgroundEdges').on('change', updatedEdgeAndWeekdayFilters);
     d3.select('#drawselections').on('change', updatedSelectionMode);
     d3.select('#edgecountsshowall').on('change', updatedEdgeCountMode);
+
+    // Days
+    d3.select('#monday').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#tuesday').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#wednesday').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#thursday').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#friday').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#saturday').on('change', updatedEdgeAndWeekdayFilters);
+    d3.select('#sunday').on('change', updatedEdgeAndWeekdayFilters);
 }
 
 /**
  * If an edge filter has been changed the map has to be updated
  */
-function updatedEdgeFilters() {
+function updatedEdgeAndWeekdayFilters() {
     withinEdges = d3.select('#withinEdges').property('checked');
     betweenEdges = d3.select('#betweenEdges').property('checked');
     backgroundEdges = d3.select('#backgroundEdges').property('checked');
+
+    weekDays[1] = d3.select('#monday').property('checked');
+    weekDays[2] = d3.select('#tuesday').property('checked');
+    weekDays[3] = d3.select('#wednesday').property('checked');
+    weekDays[4] = d3.select('#thursday').property('checked');
+    weekDays[5] = d3.select('#friday').property('checked');
+    weekDays[6] = d3.select('#saturday').property('checked');
+    weekDays[0] = d3.select('#sunday').property('checked');
     displayData();
 }
 
@@ -376,13 +392,17 @@ function drawSelection(event) {
         countAirportsForSelection(selectionColor);
 
         selectedSelections[selectionColor] = true;
-        console.log(selectedSelections);
+        //console.log(selectedSelections);
 
         startSelection = true;
         displayData(true, selectionColor+1);
     }
 }
 
+/**
+ * Counts the airports within a selection for display in the high level graph
+ * @param id the selection id
+ */
 function countAirportsForSelection(id) {
     let start = selectionCoords[0];
     let end = selectionCoords[1];
@@ -397,6 +417,9 @@ function countAirportsForSelection(id) {
     }
 }
 
+/**
+ * Deletes all selections in the map and high level graph
+ */
 function deleteAllSelections() {
     for (let i = 0; i < maxSelection; i++) {
         d3.select('#selection' + i + 'P').remove();
@@ -420,6 +443,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
     return flightListMonth.filter(function (d) {
         const origCoords = [d.longitude_1, d.latitude_1];
         const destCoords = [d.longitude_2, d.latitude_2];
+        const dayNameFormat = d3.timeFormat("%w");
+        const weekday = dayNameFormat(new Date(d.day));
 
         for (let i = 0; i < maxSelection; i++) {
             if (selectedSelections[i] === true) {
@@ -427,6 +452,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
 
                 if (checkCoords(selectionCoords, origCoords, destCoords)) {
                     if (withinEdges) {
+                        if (!weekDays[weekday])
+                            return false;
                         selectionsEdgeCounts[i][i]++;
                         amountEdges++;
                         if (d.id % divisor !== 0)
@@ -444,6 +471,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 selectionCoords2 = selections[l];
                                 if (checkCoords(selectionCoords2, destCoords)) {
                                     if (betweenEdges) {
+                                        if (!weekDays[weekday])
+                                            return false;
                                         selectionsEdgeCounts[i][l]++;
                                         amountEdges++;
                                         if (d.id % divisor !== 0)
@@ -457,6 +486,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 }
                             }
                         }
+                        if (!weekDays[weekday])
+                            return false;
                         selectionsEdgeCounts[i][i + maxSelection]++;
                         amountEdges++;
                         if (d.id % divisor !== 0)
@@ -470,6 +501,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 selectionCoords2 = selections[m];
                                 if (checkCoords(selectionCoords2, origCoords)) {
                                     if (betweenEdges) {
+                                        if (!weekDays[weekday])
+                                            return false;
                                         selectionsEdgeCounts[m][i]++;
                                         amountEdges++;
                                         if (d.id % divisor !== 0)
@@ -483,6 +516,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 }
                             }
                         }
+                        if (!weekDays[weekday])
+                            return false;
                         selectionsEdgeCounts[i + maxSelection][i]++;
                         amountEdges++;
                         if (d.id % divisor !== 0)
@@ -497,6 +532,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                         if (selectedSelections[k] === true) {
                             selectionCoords2 = selections[k];
                             if (checkCoords(selectionCoords, origCoords) && checkCoords(selectionCoords2, destCoords) && k !== i) {
+                                if (!weekDays[weekday])
+                                    return false;
                                 selectionsEdgeCounts[i][k]++;
                                 amountEdges++;
                                 if (d.id % divisor !== 0)
@@ -505,6 +542,8 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
                                 d.edgeEndColor = selectionsColorsNames[k];
                                 return true;
                             } else if (checkCoords(selectionCoords, destCoords) && checkCoords(selectionCoords2, origCoords) && k !== i) {
+                                if (!weekDays[weekday])
+                                    return false;
                                 selectionsEdgeCounts[k][i]++;
                                 amountEdges++;
                                 if (d.id % divisor !== 0)
@@ -558,7 +597,7 @@ function checkCoords(selectionCoords, origCoords, destCoords){
 }
 
 /**
- *
+ * Creates the gradients with the selection colors for the detail view edges
  */
 function createGradientsForSelections(){
     // Create the gradients
@@ -672,18 +711,18 @@ function updateHighLevelInfo() {
             }
         }
     }
-    console.log(selectionsEdgeCounts);
+    //console.log(selectionsEdgeCounts);
 }
 
 /**
  * Adds an edge in the high level graph
- * @param i
- * @param j
- * @param name1
- * @param name2
- * @param arrowColor
- * @param stopColor1
- * @param stopColor2
+ * @param i the id of the origin selection
+ * @param j the id of the destination selection
+ * @param name1 the name of the origin selection
+ * @param name2 the name of the destination selection
+ * @param arrowColor the color of the arrow
+ * @param stopColor1 the color of the origin selection
+ * @param stopColor2 the color of the destination selection
  */
 function addEdgeInHighLevelGraph(i, j, name1, name2, arrowColor, stopColor1, stopColor2) {
     highLevelGraph.add({
@@ -727,21 +766,6 @@ function deleteAllHighLevelEdges() {
         }
     }
 }
-
-/*function deleteAllHighLevelBackgroundNodes() {
-    if (backgroundEdgesOld && !backgroundEdges) {
-        console.log('fsf')
-        for (let i = 0; i < maxSelection; i++) {
-            if (highLevelGraph.$('#Selection' + i + 'B').length === 0)
-                continue;
-
-            highLevelGraph.remove(
-                highLevelGraph.$('#Selection' + i + 'B')
-            );
-        }
-        backgroundEdgesOld = backgroundEdges;
-    }
-}*/
 
 /**
  * Resets all the edge counter objects

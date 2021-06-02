@@ -8,7 +8,6 @@
     <link rel='stylesheet' type='text/css' href='style/style.css'>
 
     <script src='lib/d3/d3.js'></script>
-    <script src='lib/d3-queue/d3-queue.js'></script>
     <script src='lib/topojson/topojson.js'></script>
     <script src='lib/cytoscape/cytoscape.min.js'></script>
     <script src='js/main.js'></script>
@@ -33,6 +32,23 @@
     <div class='slidecontainer'>
         <input type='range' min='1900' max='1912' value='1900' class='slider' id='monthinputslider' oninput='document.getElementById("monthtext").innerHTML = this.value.substring(2,4) + - + 20 + this.value.substring(0,2)' onchange='loadDataForMonth(this.value)'>
         <span id='loadingtext'></span>
+
+        <p>
+            <input type='checkbox' id='monday' checked>
+            <label for='monday'>Monday</label>
+            <input type='checkbox' id='tuesday' checked>
+            <label for='tuesday'>Tuesday</label>
+            <input type='checkbox' id='wednesday' checked>
+            <label for='wednesday'>Wednesday</label>
+            <input type='checkbox' id='thursday' checked>
+            <label for='thursday'>Thursday</label>
+            <input type='checkbox' id='friday' checked>
+            <label for='friday'>Friday</label>
+            <input type='checkbox' id='saturday' checked>
+            <label for='saturday'>Saturday</label>
+            <input type='checkbox' id='sunday' checked>
+            <label for='sunday'>Sunday</label>
+        </p>
     </div>
 
     <div>
