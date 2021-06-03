@@ -28,7 +28,7 @@
                 <h5><span id='monthtext'>01-2019</span></h5>
 
                 <div class='slidecontainer'>
-                    <input class="slider" type='range' min='1' max='27' value='1' id='monthinputslider' onchange='loadDataForMonth(this.value)'>
+                    <input class="slider" type='range' min='1' max='27' value='1' id='monthinputslider' oninput="parseMonthAndYear(this.value)" onchange='loadDataForMonth(this.value)'>
                     <span id='loadingtext'></span>
 
 
