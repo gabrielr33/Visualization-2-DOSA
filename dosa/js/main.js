@@ -3,10 +3,6 @@
  * Date: 03.04.2021
  */
 
-// TODO ----- TODO
-// - Martin: make UI scrollable / fit in one window -> UI prettier
-// TODO ----- TODO
-
 // Variables
 var monthMin = 1901;    // = 2019/01
 var monthMax = 2103;    // = 2021/03
@@ -84,6 +80,7 @@ function init() {
     initHighLevelGraph();
 }
 
+
 /**
  * Initializes the filter checkboxes and inputs
  */
@@ -150,8 +147,8 @@ function loadWorldMap() {
             countries = topojson.feature(worldData, worldData.objects.europe).features;
 
         const margin = {top: 50, left: 50, right: 50, bottom: 50},
-            height = 600 - margin.top - margin.bottom,
-            width = 900 - margin.left - margin.right;
+            height = 400 - margin.top - margin.bottom,
+            width = 700 - margin.left - margin.right;
 
         svgMap = d3.select('#map')
             .append('svg')
@@ -161,8 +158,8 @@ function loadWorldMap() {
             .attr('transform', 'translate(' + (2 * margin.left) + ',' + margin.top + ')');
 
         projection = d3.geoMercator()
-            .translate([width / 3, height * 1.7])
-            .scale(500)
+            .translate([width / 4, height*1.75])
+            .scale(300)
 
         const geoPath = d3.geoPath()
             .projection(projection);
@@ -343,7 +340,12 @@ function drawSelection(event) {
             .attr('width', Math.max(0, mouseCoords[0] - +selectionRect.attr('x')))
             .attr('height', Math.max(0, mouseCoords[1] - +selectionRect.attr('y')));
 
-        d3.select('#selections')
+        d3.select('#selectionsList')
+            .append('li')
+            .attr('id', function (){
+                if (selectionColor !== -1)
+                    return 'selectionslistelement' + selectionColor;
+            })
             .append('p')
             .attr('id', function (){
                 if (selectionColor !== -1)
@@ -370,9 +372,9 @@ function drawSelection(event) {
                 highLevelGraph.$('#Selection' + nr).css('border-color', selectionsColors[nr]);
                 highLevelGraph.$('#Selection' + nr).css('color', selectionsColors[nr]);
             })
-            .append('input')
+            .append('button')
             .attr('type', 'button')
-            .attr('class', 'button')
+            .attr('class', 'btn-sm btn-labeled btn-danger')
             .attr('id', 'selection' + selectionColor)
             .attr('value', 'Delete Selection ' + selectionsColorsNames[selectionColor])
             .on('click', function () {
@@ -380,11 +382,16 @@ function drawSelection(event) {
                 const selectionNr = parseInt(id.substring(id.length-1,id.length));
                 d3.select('#' + id + 'P').remove();
                 d3.select('#' + id + 'R').remove();
+                d3.select('#selectionslistelement' + selectionNr).remove();
                 selectedSelections[selectionNr] = false;
                 console.log(selectedSelections);
                 selectionsCount--;
                 displayData(false, selectionNr+1);
-            });
+            })
+            .append('span')
+            .attr('class','btn-label')
+            .append('i')
+            .attr('class','fa fa-trash');
 
         selectionCoordsEnd = projection.invert([mouseCoords[0], mouseCoords[1]]);
         selectionCoords = [selectionCoordsStart, selectionCoordsEnd];
@@ -740,7 +747,7 @@ function addEdgeInHighLevelGraph(originId, destinationId, nameOrigin, nameDestin
             'loop-direction': '0deg',
             'loop-sweep': '-45deg',
             'source-text-offset': '100px',
-            'color': '#FFFFFF',
+            'color': '#000000',
             'target-arrow-color': selectionsColors[arrowColorIndex],
             'line-gradient-stop-colors': [selectionsColors[stopColor1Index], selectionsColors[stopColor2Index]]
         }
@@ -806,9 +813,9 @@ function createHighLevelInfo(idToCreate) {
         style: {
             width: 7,
             height: 7,
-            'color': null,
-            'border-color': null,
-            'background-color': null,
+            'color': '#FFFFFF',
+            'border-color': '#ffffff',
+            'background-color': '#dbdbdb',
             'label': '.'
         }
     });
@@ -860,7 +867,7 @@ function initHighLevelGraph() {
                     'text-halign': 'center',
                     'font-size': 20,
                     'border-width': 3,
-                    'background-color': '#394037',
+                    'background-color': '#efe5eb',
                     'label': 'data(id)'
                 }
             },
@@ -875,7 +882,7 @@ function initHighLevelGraph() {
             {
                 selector: 'edge',
                 style: {
-                    'overlay-color': '#FFFFFF',
+                    'overlay-color': '#000000',
                     'curve-style': 'bezier',
                     'target-arrow-shape': 'triangle',
                     'line-fill': 'linear-gradient',
