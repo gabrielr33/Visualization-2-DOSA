@@ -258,7 +258,7 @@ function parseMonthAndYear(month) {
     if (month < 10)
         month = '0' + month;
 
-    document.getElementById("monthtext").innerHTML = month + ' - ' + year;
+    document.getElementById("monthtext").innerHTML = month + ' - 20' + year;
 
     return '20' + year + '' + month;
 }
