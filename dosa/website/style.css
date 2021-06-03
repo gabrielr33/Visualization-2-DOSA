@@ -1,0 +1,27 @@
+p, h1, h4, li {
+    font-family: "Segoe UI Light", sans-serif;
+}
+
+a {
+    font-size: 18px;
+    margin-right: 50px;
+    text-decoration: none;
+    color: #039ae5;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.content {
+    max-width: 1000px;
+    margin: auto;
+    padding: 10px;
+}
+
+img {
+    width: 50%;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
