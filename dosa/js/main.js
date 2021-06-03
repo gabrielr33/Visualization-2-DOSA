@@ -235,7 +235,6 @@ function loadDataForMonth(month) {
     d3.select('#loadingtext').text('refreshing data...');
 
     let monthAndYear = parseMonthAndYear(month);
-    document.getElementById("monthtext").innerHTML = monthAndYear.substring(4,6) + ' - ' + monthAndYear.substring(0,4);
 
     loadData(monthAndYear);
     refreshed = true;
@@ -258,6 +257,8 @@ function parseMonthAndYear(month) {
     }
     if (month < 10)
         month = '0' + month;
+
+    document.getElementById("monthtext").innerHTML = month + ' - ' + year;
 
     return '20' + year + '' + month;
 }

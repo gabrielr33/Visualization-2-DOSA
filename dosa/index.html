@@ -6,8 +6,8 @@
     <title>Vis2 DOSA</title>
 
     <link rel='stylesheet' type='text/css' href='style/style.css'>
-    <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css' rel='stylesheet' integrity='sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x' crossorigin='anonymous'>
-    <link rel='stylesheet' href='https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css' integrity='sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN' crossorigin='anonymous'>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
     <script src='lib/d3/d3.js'></script>
     <script src='lib/topojson/topojson.js'></script>
@@ -17,71 +17,71 @@
 
 <body onload='init()'>
 
-<div class='container-fluid'>
-    <h3 class='mt-3'>Vis2 DOSA</h3>
+<div class="container-fluid">
+    <h3 class="mt-3">Vis2 DOSA</h3>
 
-    <div class='row row-no-padding'>
-        <div class='col-6'>
+    <div class="row row-no-padding">
+        <div class="col-6">
             <div class='view-filter'>
-                <h4 class='mb-3'>Filter View</h4>
+                <h4 class="mb-3">Filter View</h4>
 
                 <h5><span id='monthtext'>01-2019</span></h5>
 
                 <div class='slidecontainer'>
-                    <input class='slider' type='range' min='1' max='27' value='1' id='monthinputslider' onchange='loadDataForMonth(this.value)'>
+                    <input class="slider" type='range' min='1' max='27' value='1' id='monthinputslider' onchange='loadDataForMonth(this.value)'>
                     <span id='loadingtext'></span>
 
 
-                    <div class='mt-3'>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='monday' value='option1' checked>
-                        <label class='form-check-label' for='monday'>Monday</label>
+                    <div class="mt-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="monday" value="option1" checked>
+                        <label class="form-check-label" for="monday">Monday</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='tuesday' value='option2' checked>
-                        <label class='form-check-label' for='tuesday'>Tuesday</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="tuesday" value="option2" checked>
+                        <label class="form-check-label" for="tuesday">Tuesday</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='wednesday' value='option3' checked>
-                        <label class='form-check-label' for='wednesday'>Wednesday</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="wednesday" value="option3" checked>
+                        <label class="form-check-label" for="wednesday">Wednesday</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='thursday' value='option2' checked>
-                        <label class='form-check-label' for='thursday'>Thursday</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="thursday" value="option2" checked>
+                        <label class="form-check-label" for="thursday">Thursday</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='friday' value='option3' checked>
-                        <label class='form-check-label' for='friday'>Friday</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="friday" value="option3" checked>
+                        <label class="form-check-label" for="friday">Friday</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='saturday' value='option2' checked>
-                        <label class='form-check-label' for='saturday'>Saturday</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="saturday" value="option2" checked>
+                        <label class="form-check-label" for="saturday">Saturday</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='sunday' value='option3' checked>
-                        <label class='form-check-label' for='sunday'>Sunday</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="sunday" value="option3" checked>
+                        <label class="form-check-label" for="sunday">Sunday</label>
                     </div>
                 </div>
                 </div>
 
-                <div class='mt-3'>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='withinEdges' value='option1'>
-                        <label class='form-check-label' for='withinEdges'>Within edges</label>
+                <div class="mt-3">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="withinEdges" value="option1">
+                        <label class="form-check-label" for="withinEdges">Within edges</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='betweenEdges' value='option2'>
-                        <label class='form-check-label' for='betweenEdges'>Between edges</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="betweenEdges" value="option2">
+                        <label class="form-check-label" for="betweenEdges">Between edges</label>
                     </div>
-                    <div class='form-check form-check-inline'>
-                        <input class='form-check-input' type='checkbox' id='backgroundEdges' value='option3'>
-                        <label class='form-check-label' for='backgroundEdges'>Background edges</label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="backgroundEdges" value="option3">
+                        <label class="form-check-label" for="backgroundEdges">Background edges</label>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class='col-6'>
+        <div class="col-6">
             <div class='view-selections'>
 
                 <div id='selections'>
@@ -89,9 +89,9 @@
                     <h4>Selection View</h4>
 
                     <ul id='selectionsList'>
-                        <li><p id='selectionAll'>
+                        <li><p id="selectionAll">
                             Delete All Selections
-                            <button id='buttonDelete' type='button' class='btn-sm btn-labeled btn-danger' onclick='deleteAllSelections()'><i class='fa fa-trash'></i></button>
+                            <button id='buttonDelete' type='button' class='btn-sm btn-labeled btn-danger' onclick='deleteAllSelections()'><i class="fa fa-trash"></i></button>
                         </p></li>
                     </ul>
 
@@ -101,19 +101,19 @@
     </div>
 </div>
 
-<div class='container-fluid'>
+<div class="container-fluid">
 
-    <div class='row row-no-padding'>
+    <div class="row row-no-padding">
 
-        <div class='col-lg-6 col-md-12'>
+        <div class="col-lg-6 col-md-12">
             <div class='view-detail'>
                 <div class='view-container'>
                     <div class='view-map'>
                         <h4>Detail View</h4>
 
-                        <div class='form-check form-check-inline'>
-                            <input class='form-check-input' type='checkbox' id='drawselections' value='option1'>
-                            <label class='form-check-label' for='drawselections'>Draw selections</label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" id="drawselections" value="option1">
+                            <label class="form-check-label" for="drawselections">Draw selections</label>
                         </div>
 
 
@@ -133,12 +133,12 @@
             </div>
         </div>
 
-        <div class='col-lg-6 col-md-12'>
+        <div class="col-lg-6 col-md-12">
             <div class='view-high-level'>
                 <h4>High-Level View</h4>
-                <div class='form-check form-check-inline'>
-                    <input class='form-check-input' type='checkbox' id='edgecountsshowall' value='option1'>
-                    <label class='form-check-label' for='edgecountsshowall'>Show Edge Counts</label>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="checkbox" id="edgecountsshowall" value="option1">
+                    <label class="form-check-label" for="edgecountsshowall">Show Edge Counts</label>
                 </div>
 
                 <div id='highlevelview'></div>
@@ -149,7 +149,7 @@
 
     <hr>
 
-    <p class='mt-3' id='credits'>
+    <p class="mt-3" id='credits'>
         Created by Martin Crepaz and Gabriel Ratschiller in the course 'Visualisierung 2' of the masters 'Visual Computing' at the TU Wien.<br>
         Implementation based on the paper 'Multivariate Network Exploration and Presentation: From Detail to Overview via Selections and Aggregations' - Van den Elzen, S., & Van Wijk, J. J. (2014)
     </p>
