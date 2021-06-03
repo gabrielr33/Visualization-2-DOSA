@@ -1,6 +1,6 @@
 /**
  * Authors: Gabriel Ratschiller & Martin Crepaz
- * Date: 03.04.2021
+ * Date: 03.04.2021 - 03.06.2021
  */
 
 // Variables
@@ -249,7 +249,6 @@ function loadData(month) {
             flightListMonth.push(loadedRow);
     }).then(function () {
         console.log('Loaded data for ' + month + ': ' + flightListMonth.length + ' flights found!')
-        //updateHighLevelInfo();
         divisor = Math.floor(flightListMonth.length/20000);
         if (refreshed) {
             displayData();
@@ -384,7 +383,6 @@ function drawSelection(event) {
                 d3.select('#' + id + 'R').remove();
                 d3.select('#selectionslistelement' + selectionNr).remove();
                 selectedSelections[selectionNr] = false;
-                console.log(selectedSelections);
                 selectionsCount--;
                 displayData(false, selectionNr+1);
             })
@@ -400,7 +398,6 @@ function drawSelection(event) {
         countAirportsForSelection(selectionColor);
 
         selectedSelections[selectionColor] = true;
-        //console.log(selectedSelections);
 
         startSelection = true;
         displayData(true, selectionColor+1);
@@ -719,7 +716,6 @@ function updateHighLevelInfo() {
             }
         }
     }
-    //console.log(selectionsEdgeCounts);
 }
 
 /**
