@@ -5,7 +5,6 @@
 
 // TODO ----- TODO
 // - Martin: make UI scrollable / fit in one window -> UI prettier
-// - fix sea selection problem
 // TODO ----- TODO
 
 // Variables
@@ -189,6 +188,8 @@ function loadWorldMap() {
             .on('mouseout', function () {
                 d3.select(this).attr('fill', '#000000')
                 d3.select(this).attr('stroke', '#FFFFFF')
+                d3.select('#countryname')
+                    .text('No country selected');
             })
             .on('mousemove', mousemove)
             .on('click', function (event) {
@@ -230,7 +231,7 @@ function loadAirports() {
 
 /**
  * Gets called from the UI if the load month button has been pressed
- * @param month the month whose data should be loaded into the visualization
+ * @param {string} month the month whose data should be loaded into the visualization
  */
 function loadDataForMonth(month) {
     d3.select('#loadingtext').text('refreshing data...');
@@ -240,7 +241,7 @@ function loadDataForMonth(month) {
 
 /**
  * Loads the flights from the csv file of the specified month
- * @param month the month whose data should be loaded into the visualization
+ * @param {string} month the month whose data should be loaded into the visualization
  */
 function loadData(month) {
     flightListMonth = [];
@@ -282,7 +283,7 @@ function initMapZoom() {
 
 /**
  * Triggers if a selection has been made in the draw selection mode
- * @param event the mousemove event
+ * @param {Object} event the mousemove event
  */
 function mousemove(event) {
     if (!drawSelectionsMode || startSelection)
@@ -302,7 +303,7 @@ function mousemove(event) {
 
 /**
  * Find the first free selection slot
- * @returns {number}
+ * @returns {number} the index of the first free selection slot in the selected selections array
  */
 function findFirstFreeSelectionsSlot(){
     for (let i = 0; i < selectedSelections.length; i++) {
@@ -316,7 +317,7 @@ function findFirstFreeSelectionsSlot(){
 
 /**
  * Responsible for the selections drawing process
- * @param event the mouse click event
+ * @param {Object} event the mouse click event
  */
 function drawSelection(event) {
     if (selectionsCount >= maxSelection)
@@ -401,7 +402,7 @@ function drawSelection(event) {
 
 /**
  * Counts the airports within a selection for display in the high level graph
- * @param id the selection id
+ * @param {number} id the selection id
  */
 function countAirportsForSelection(id) {
     let start = selectionCoords[0];
@@ -433,10 +434,10 @@ function deleteAllSelections() {
 
 /**
  * Filters the data based on the selected filters
- * @param withinEdges if true, then show the within edges of the selected country
- * @param betweenEdges if true, then show the between edges between two selected countries
- * @param backgroundEdges if true, then show the background edges of the selected country
- * @returns the filtered data
+ * @param {boolean} withinEdges if true, then show the within edges of the selected country
+ * @param {boolean} betweenEdges if true, then show the between edges between two selected countries
+ * @param {boolean} backgroundEdges if true, then show the background edges of the selected country
+ * @returns {Array} the filtered data
  */
 function filterData(withinEdges, betweenEdges, backgroundEdges) {
     // Filter flight list by selections and edges
@@ -563,10 +564,10 @@ function filterData(withinEdges, betweenEdges, backgroundEdges) {
 
 /**
  * Checks whether the origin coordinates or the destination coordinates of a flight entry lie within a destination coordinate rect
- * @param selectionCoords the coordinates of the selection rect
- * @param origCoords the coordinates of the origin airport of the entry
- * @param destCoords the coordinates of the destinatiopn airport of the entry
- * @returns {boolean}
+ * @param {Array} selectionCoords the coordinates of the selection rect
+ * @param {Array} origCoords the coordinates of the origin airport of the entry
+ * @param {Array} destCoords the coordinates of the destinatiopn airport of the entry
+ * @returns {boolean} true if the given coordinates lie within the selection coordinates, false otherwise
  */
 function checkCoords(selectionCoords, origCoords, destCoords){
     let selCoordsStart;
@@ -642,8 +643,8 @@ function createGradientsForSelections(){
 
 /**
  * Draws the edges on the map according to the selected countries
- * @param highLevelInfo specifies if the high level info has to be created or removed
- * @param id the id of the selection to be created or deleted
+ * @param {boolean} highLevelInfo specifies if the high level info has to be created or removed
+ * @param {number} id the id of the selection to be created or deleted
  */
 function displayData(highLevelInfo, id) {
     d3.selectAll('line').remove();
@@ -716,39 +717,39 @@ function updateHighLevelInfo() {
 
 /**
  * Adds an edge in the high level graph
- * @param i the id of the origin selection
- * @param j the id of the destination selection
- * @param name1 the name of the origin selection
- * @param name2 the name of the destination selection
- * @param arrowColor the color of the arrow
- * @param stopColor1 the color of the origin selection
- * @param stopColor2 the color of the destination selection
+ * @param {number} originId the id of the origin selection
+ * @param {number} destinationId the id of the destination selection
+ * @param {string} nameOrigin the name of the origin selection
+ * @param {string} nameDestination the name of the destination selection
+ * @param {number} arrowColorIndex the index of the color for the arrow
+ * @param {number} stopColor1Index the index of the color for the origin selection
+ * @param {number} stopColor2Index the index of the color for the destination selection
  */
-function addEdgeInHighLevelGraph(i, j, name1, name2, arrowColor, stopColor1, stopColor2) {
+function addEdgeInHighLevelGraph(originId, destinationId, nameOrigin, nameDestination, arrowColorIndex, stopColor1Index, stopColor2Index) {
     highLevelGraph.add({
         data: {
-            id: 'edge' + i + j,
-            source: 'Selection' + name1,
-            target: 'Selection' + name2,
-            count: selectionsEdgeCounts[i][j]
+            id: 'edge' + originId + destinationId,
+            source: 'Selection' + nameOrigin,
+            target: 'Selection' + nameDestination,
+            count: selectionsEdgeCounts[originId][destinationId]
         },
         style: {
-            width: Math.max(3, (selectionsEdgeCounts[i][j]/amountEdges)*(30*selectionsCount)),
+            width: Math.max(3, (selectionsEdgeCounts[originId][destinationId]/amountEdges)*(30*selectionsCount)),
             'font-size': 30,
             'control-point-step-size': '80px',
             'loop-direction': '0deg',
             'loop-sweep': '-45deg',
             'source-text-offset': '100px',
             'color': '#FFFFFF',
-            'target-arrow-color': selectionsColors[arrowColor],
-            'line-gradient-stop-colors': [selectionsColors[stopColor1], selectionsColors[stopColor2]]
+            'target-arrow-color': selectionsColors[arrowColorIndex],
+            'line-gradient-stop-colors': [selectionsColors[stopColor1Index], selectionsColors[stopColor2Index]]
         }
     });
 
     if (showAllEdgeCounts)
-        highLevelGraph.$('#edge' + i + j).toggleClass('edgeLabel');
+        highLevelGraph.$('#edge' + originId + destinationId).toggleClass('edgeLabel');
     else
-        highLevelGraph.$('#edge' + i + j).toggleClass('edge');
+        highLevelGraph.$('#edge' + originId + destinationId).toggleClass('edge');
 }
 
 /**
@@ -781,7 +782,7 @@ function resetEdgeCounters() {
 
 /**
  * Creates a node with its background node in the high level graph
- * @param idToCreate the id of the selection to be created
+ * @param {number} idToCreate the id of the selection to be created
  */
 function createHighLevelInfo(idToCreate) {
     let id = idToCreate - 1;
@@ -819,7 +820,7 @@ function createHighLevelInfo(idToCreate) {
 
 /**
  * Removes the specified high level entry
- * @param idToDelete the id of the selection to be deleted
+ * @param {number} idToDelete the id of the selection to be deleted
  */
 function removeHighLevelInfo(idToDelete) {
     highLevelGraph.remove(
