@@ -385,8 +385,8 @@ function drawSelection(event) {
                 d3.select(sel).attr('stroke', '#FFFFFF');
                 // High level graph node
                 const selectionNr = parseInt(sel.substring(sel.length-2,sel.length-1));
-                highLevelGraph.$('#Selection' + selectionNr).css('border-color', '#FFFFFF');
-                highLevelGraph.$('#Selection' + selectionNr).css('color', '#FFFFFF');
+                highLevelGraph.$('#Selection' + selectionNr).css('border-color', '#000000');
+                highLevelGraph.$('#Selection' + selectionNr).css('color', '#000000');
             })
             .on('mouseout', function () {
                 let sel = d3.select(this).attr('id');
@@ -764,7 +764,7 @@ function addEdgeInHighLevelGraph(originId, destinationId, nameOrigin, nameDestin
             count: selectionsEdgeCounts[originId][destinationId]
         },
         style: {
-            width: Math.max(3, (selectionsEdgeCounts[originId][destinationId]/amountEdges)*(30*selectionsCount)),
+            width: Math.min(Math.max(3, (selectionsEdgeCounts[originId][destinationId]/amountEdges)*(30*selectionsCount)),16),
             'font-size': 30,
             'control-point-step-size': '80px',
             'loop-direction': '0deg',
