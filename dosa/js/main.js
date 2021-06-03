@@ -1,4 +1,5 @@
 /**
+ * DOSA: Multivariate Network Exploration and Presentation
  * Authors: Gabriel Ratschiller & Martin Crepaz
  * Date: 03.04.2021 - 03.06.2021
  */
@@ -74,7 +75,7 @@ var showAllEdgeCounts = false;
 function init() {
     initSelectionsEdgeCounts();
     initFilters();
-    loadData(1900);
+    loadData(201901);
     loadWorldMap();
     initMapZoom();
     initHighLevelGraph();
@@ -227,13 +228,38 @@ function loadAirports() {
 }
 
 /**
- * Gets called from the UI if the load month button has been pressed
- * @param {string} month the month whose data should be loaded into the visualization
+ * Gets called from the UI if the load month button has been pressed, parses the month and year to be loaded
+ * @param {number} month the month whose data should be loaded into the visualization
  */
 function loadDataForMonth(month) {
     d3.select('#loadingtext').text('refreshing data...');
-    loadData(month);
+
+    let monthAndYear = parseMonthAndYear(month);
+    document.getElementById("monthtext").innerHTML = monthAndYear.substring(4,6) + ' - ' + monthAndYear.substring(0,4);
+
+    loadData(monthAndYear);
     refreshed = true;
+}
+
+/**
+ * Parses the given month into a year and month format that is used to access the data
+ * @param {number} month the month to be parsed
+ * @returns {string} the year and month in the format 20YYMM
+ */
+function parseMonthAndYear(month) {
+    let year = 19;
+    if (month > 12 && month <= 24) {
+        month -= 12;
+        year = 20;
+    }
+    if (month > 24) {
+        month -= 24;
+        year = 21;
+    }
+    if (month < 10)
+        month = '0' + month;
+
+    return '20' + year + '' + month;
 }
 
 /**
@@ -244,7 +270,7 @@ function loadData(month) {
     flightListMonth = [];
 
     //Load the specified monthly data
-    d3.csv('./dataset/dataset_flights_europe/flightlist_20' + month + '.csv', function (loadedRow) {
+    d3.csv('./dataset/dataset_flights_europe/flightlist_' + month + '.csv', function (loadedRow) {
         if (loadedRow)
             flightListMonth.push(loadedRow);
     }).then(function () {

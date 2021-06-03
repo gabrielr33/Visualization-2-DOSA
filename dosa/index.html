@@ -25,10 +25,10 @@
             <div class='view-filter'>
                 <h4 class="mb-3">Filter View</h4>
 
-                <h5><span id='monthtext'>00-2019</span></h5>
+                <h5><span id='monthtext'>01-2019</span></h5>
 
                 <div class='slidecontainer'>
-                    <input class="slider" type='range' min='1900' max='1912' value='1900' id='monthinputslider' oninput='document.getElementById("monthtext").innerHTML = this.value.substring(2,4) + - + 20 + this.value.substring(0,2)' onchange='loadDataForMonth(this.value)'>
+                    <input class="slider" type='range' min='1' max='27' value='1' id='monthinputslider' onchange='loadDataForMonth(this.value)'>
                     <span id='loadingtext'></span>
 
 
