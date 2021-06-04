@@ -456,6 +456,7 @@ function deleteAllSelections() {
     for (let i = 0; i < maxSelection; i++) {
         d3.select('#selection' + i + 'P').remove();
         d3.select('#selection' + i + 'R').remove();
+        d3.select('#selectionslistelement' + i).remove();
         selectedSelections[i] = false;
         selectionsNodeCounts[i] = 0;
         selectionsCount--;
