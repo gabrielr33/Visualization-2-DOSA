@@ -43,6 +43,11 @@ The data consists of monthly worldwide flight data, for our application we have 
 - 'flightlist_201910': October 2019 - 324985 entries
 - 'flightlist_202011': November 2020 - 86448 entries
 
+### Libraries used
+- d3.js
+- topojson.js
+- cytoscape.js
+- bootstrap
 
 ### References
 S. van den Elzen and J. J. van Wijk, "Multivariate Network Exploration and Presentation: From Detail to Overview via Selections and Aggregations." IEEE Transactions on Visualization and Computer Graphics, 2014. (https://ieeexplore.ieee.org/document/6875972)
