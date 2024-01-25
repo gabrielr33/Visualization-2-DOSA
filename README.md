@@ -5,7 +5,7 @@ by Martin Crepaz & Gabriel Ratschiller
 ## Multivariate Network Exploration and Presentation: From Detail to Overview via Selections and Aggregations - An Application to visualize flight connections in Europe.
 
 ### General
-This program is the implementation of the method DOSA (Detail to Overview via Selections and Aggregations) described in the paper "Multivariate Network Exploration and Presentation. From Detail to Overview via Selections and Aggregations" by Stef van den Elzen and Jarke J. van Wijk.
+This project is an implementation of the method DOSA (Detail to Overview via Selections and Aggregations) described in the paper "Multivariate Network Exploration and Presentation. From Detail to Overview via Selections and Aggregations" by Stef van den Elzen and Jarke J. van Wijk and was developed as part of the university course "Visualization 2" at the TU Wien.
 
 The paper describes a method to visualize multivariate network data using two juxtaposed coupled views: a detail view and a high-level view.
 With the help of selections of interests and aggregation of the selected data points the network data can be clearly visualized and studied.
