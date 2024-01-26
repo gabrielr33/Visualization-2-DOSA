@@ -1,4 +1,4 @@
-# DOSA : Multivariate Network Exploration and Presentation
+# DOSA: Multivariate Network Exploration and Presentation
 
 by Martin Crepaz & Gabriel Ratschiller
 
